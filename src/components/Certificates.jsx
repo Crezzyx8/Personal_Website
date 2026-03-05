@@ -7,6 +7,8 @@ import js from "../assets/js.jpg"
 import python from "../assets/Python.jpg"
 import sql from "../assets/SQL.jpg"
 import BigData from "../assets/BigData.jpg"
+import microsoftfabric from "../assets/microsoftfabric.jpg"
+import machinelearning from "../assets/machinelearning.jpg"
 
 
 const certificates = [
@@ -37,6 +39,14 @@ const certificates = [
   {
     title: "Big Data",
     image: BigData,
+  },
+  {
+    title: "Microsoft Fabric",
+    image: microsoftfabric,
+  },
+  {
+    title: "Machine Learning",
+    image: machinelearning,
   },
 
 ]

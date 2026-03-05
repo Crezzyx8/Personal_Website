@@ -1,14 +1,62 @@
-const Contact = () => {
+import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa"
+
+export default function Contact() {
   return (
-    <section id="contact" className="py-32 max-w-5xl mx-auto px-6 text-center reveal">
-      <h2 className="text-3xl font-bold mb-6">Contact</h2>
-      <p className="text-neutral-400">
-        Phone: (+62) 8956-1366-3334
-        <br />
-        Email: filberthuangg@gmail.com
+    <section id="contact" className="py-24 max-w-4xl mx-auto px-6">
+
+      <h2 className="text-3xl font-bold text-center mb-6">
+        Contact
+      </h2>
+
+      <p className="text-center text-gray-400 mb-12">
+        Feel free to reach out or connect with me.
       </p>
+
+      <div className="flex justify-center gap-16">
+
+        {/* LinkedIn */}
+        <a
+          href="https://www.linkedin.com/in/filbert-huang-816a60297/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-col items-center group"
+        >
+          <FaLinkedin className="text-5xl text-gray-300 transition duration-300 group-hover:text-blue-500 group-hover:scale-110" />
+          <span className="mt-3 text-sm text-gray-400 group-hover:text-white transition">
+            LinkedIn
+          </span>
+        </a>
+
+        {/* GitHub */}
+        <a
+          href="https://github.com/Crezzyx8"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-col items-center group"
+        >
+          <FaGithub className="text-5xl text-gray-300 transition duration-300 group-hover:text-white group-hover:scale-110" />
+          <span className="mt-3 text-sm text-gray-400 group-hover:text-white transition">
+            GitHub
+          </span>
+        </a>
+
+        {/* Email */}
+        <a
+          href="mailto:filberthuangg@gmail.com"
+          className="flex flex-col items-center group"
+        >
+          <FaEnvelope className="text-5xl text-gray-300 transition duration-300 group-hover:text-red-400 group-hover:scale-110" />
+          <span className="mt-3 text-sm text-gray-400 group-hover:text-white transition">
+            Email
+          </span>
+        </a>
+
+      </div>
+
+      <p className="text-center text-gray-500 text-sm mt-16">
+        © 2026 Filbert Huang. All rights reserved.
+      </p>
+
     </section>
   )
 }
-
-export default Contact

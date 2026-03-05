@@ -1,0 +1,83 @@
+.projects {
+  padding: 80px 10%;
+  background: #0f0f0f;
+  color: white;
+}
+
+.projects-title {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 50px;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+}
+
+.project-card {
+  background: #161616;
+  padding: 25px;
+  border-radius: 14px;
+  transition: all 0.3s ease;
+  border: 1px solid #262626;
+}
+
+.project-card:hover {
+  transform: translateY(-8px);
+  border-color: #4f46e5;
+}
+
+.project-card h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.project-card p {
+  font-size: 14px;
+  color: #b5b5b5;
+  margin-bottom: 15px;
+}
+
+.tech-badge {
+  display: inline-block;
+  font-size: 12px;
+  background: #1f1f1f;
+  padding: 5px 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.github-btn {
+  display: inline-block;
+  text-decoration: none;
+  background: #4f46e5;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.github-btn:hover {
+  background: #6366f1;
+}
+
+
+.fade-in {
+  animation: fadeIn 1s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
