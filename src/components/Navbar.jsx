@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react"
+import { Menu, X } from "lucide-react"
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false)
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  const menu = ["About", "Experience", "Projects", "Certificates", "Contact"]
 
   return (
     <nav
@@ -17,29 +21,53 @@ const Navbar = () => {
           : "bg-transparent"
       }`}
     >
-      {/* FULL WIDTH CONTAINER */}
-      <div className="w-full px-12 py-6 flex justify-between items-center">
-        
-        {/* LOGO / NAME */}
-        <h1 className="text-2xl md:text-3xl font-bold tracking-wide text-white">
-          Personal Website
+      <div className="w-full px-6 md:px-12 py-5 flex justify-between items-center">
+
+        {/* LOGO */}
+        <h1 className="text-xl md:text-2xl font-bold tracking-wide text-white">
+          Filbert Huang Personal Portfolio Website
         </h1>
 
-        {/* MENU */}
-        <div className="hidden md:flex items-center gap-12 text-base text-neutral-400">
-          {["About", "Experience", "Projects", "Certificates", "Contact"].map((item) => (
+        {/* DESKTOP MENU */}
+        <div className="hidden md:flex items-center gap-10 text-neutral-400">
+          {menu.map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
-              className="relative hover:text-white transition duration-300"
+              className="relative hover:text-white transition"
             >
               {item}
-              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-blue-500 transition-all duration-300 hover:w-full"></span>
             </a>
           ))}
         </div>
 
+        {/* MOBILE BUTTON */}
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden text-white"
+        >
+          {open ? <X size={26} /> : <Menu size={26} />}
+        </button>
+
       </div>
+
+      {/* MOBILE MENU */}
+      {open && (
+        <div className="md:hidden bg-black/95 border-t border-neutral-800">
+          <div className="flex flex-col items-center gap-6 py-8 text-neutral-300">
+            {menu.map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                onClick={() => setOpen(false)}
+                className="hover:text-white transition"
+              >
+                {item}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </nav>
   )
 }

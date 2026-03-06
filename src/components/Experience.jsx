@@ -11,7 +11,7 @@ const experiences = [
     ]
   },
   {
-    role: "Business Executive(Insurance Agent)",
+    role: "Business Executive (Insurance Agent)",
     company: "PT Allianz Life Indonesia",
     period: "Mar 2024 – Jan 2025",
     desc: [
@@ -21,7 +21,7 @@ const experiences = [
     ]
   },
   {
-    role: "Education Counselor(Part-time)",
+    role: "Education Counselor (Part-time)",
     company: "Binus Admission",
     period: "Mar 2023 – Sep 2024",
     desc: [
@@ -31,7 +31,7 @@ const experiences = [
     ]
   },
   {
-    role: "Freshmen Leader & Partner(Volunteer)",
+    role: "Freshmen Leader & Partner (Volunteer)",
     company: "Bina Nusantara University",
     period: "Aug 2023 – Aug 2024",
     desc: [
@@ -44,47 +44,53 @@ const experiences = [
 
 export default function Experience() {
   return (
-    <section id="experience" className="py-24 max-w-5xl mx-auto px-6">
-
-      <h2 className="text-3xl font-bold text-center mb-12">
+    <section
+      id="experience"
+      className="py-24 max-w-5xl mx-auto px-6 scroll-mt-24"
+    >
+      <h2 className="text-3xl font-bold text-center mb-16">
         Experience
       </h2>
 
-      <div className="space-y-8">
+      {/* Timeline */}
+      <div className="relative border-l border-zinc-700">
 
         {experiences.map((exp, index) => (
-          <div
-            key={index}
-            className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl hover:border-blue-500 transition"
-          >
+          <div key={index} className="mb-12 ml-6 relative">
 
-            <div className="flex justify-between flex-wrap mb-2">
+            {/* Timeline Dot */}
+            <span className="absolute -left-3 flex items-center justify-center w-6 h-6 bg-blue-500 rounded-full ring-8 ring-black"></span>
 
-              <h3 className="text-xl font-semibold text-white">
-                {exp.role}
-              </h3>
+            <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl hover:border-blue-500 transition">
 
-              <span className="text-gray-400 text-sm">
-                {exp.period}
-              </span>
+              <div className="flex justify-between flex-wrap mb-2">
+
+                <h3 className="text-xl font-semibold text-white">
+                  {exp.role}
+                </h3>
+
+                <span className="text-gray-400 text-sm">
+                  {exp.period}
+                </span>
+
+              </div>
+
+              <p className="text-blue-400 mb-4">
+                {exp.company}
+              </p>
+
+              <ul className="list-disc list-inside text-gray-300 space-y-1">
+                {exp.desc.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
 
             </div>
-
-            <p className="text-blue-400 mb-4">
-              {exp.company}
-            </p>
-
-            <ul className="list-disc list-inside text-gray-300 space-y-1">
-              {exp.desc.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul>
 
           </div>
         ))}
 
       </div>
-
     </section>
   )
 }

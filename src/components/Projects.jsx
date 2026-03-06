@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { FaGithub } from "react-icons/fa"
 
 export default function Projects() {
 
@@ -11,7 +12,7 @@ export default function Projects() {
 
         const sortedRepos = data
           .sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0,15)
+          .slice(0,9)
 
         setRepos(sortedRepos)
       })
@@ -19,13 +20,16 @@ export default function Projects() {
 
   return (
 
-    <section id="projects" className="py-24 max-w-6xl mx-auto px-6">
+    <section
+      id="projects"
+      className="py-24 max-w-6xl mx-auto px-6 scroll-mt-24"
+    >
 
       <h2 className="text-3xl font-bold text-center mb-16">
         Projects
       </h2>
 
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
         {repos.map(repo => (
 
@@ -34,26 +38,35 @@ export default function Projects() {
             href={repo.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl hover:border-blue-500 hover:scale-105 transition duration-300"
+            className="group bg-zinc-900 border border-zinc-800 p-6 rounded-xl hover:border-blue-500 hover:-translate-y-2 transition duration-300"
           >
 
-            <h3 className="text-lg font-semibold mb-2">
+            {/* Repo Title */}
+            <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-400 transition">
               {repo.name}
             </h3>
 
-            <p className="text-gray-400 text-sm mb-4">
+            {/* Description */}
+            <p className="text-gray-400 text-sm mb-6 min-h-[40px]">
               {repo.description || "No description provided"}
             </p>
 
-            <div className="flex justify-between text-xs text-gray-500">
+            {/* Bottom Section */}
+            <div className="flex justify-between items-center text-xs text-gray-500">
 
-              <span>
+              <span className="bg-zinc-800 px-2 py-1 rounded">
                 {repo.language || "Code"}
               </span>
 
-              <span>
-                ⭐ {repo.stargazers_count}
-              </span>
+              <div className="flex items-center gap-3">
+
+                <span>
+                  ⭐ {repo.stargazers_count}
+                </span>
+
+                <FaGithub className="text-lg opacity-70 group-hover:opacity-100"/>
+
+              </div>
 
             </div>
 
@@ -64,6 +77,5 @@ export default function Projects() {
       </div>
 
     </section>
-
   )
 }

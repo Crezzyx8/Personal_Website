@@ -10,97 +10,102 @@ import BigData from "../assets/BigData.jpg"
 import microsoftfabric from "../assets/microsoftfabric.jpg"
 import machinelearning from "../assets/machinelearning.jpg"
 
-
 const certificates = [
-  {
-    title: "Backend Development",
-    image: backend,
-  },
-  {
-    title: "Cloud Computing",
-    image: cloud,
-  },
-  {
-    title: "IBM Certification",
-    image: ibm,
-  },
-  {
-    title: "JavaScript Certification",
-    image: js,
-  },
-  {
-    title: "Python Certification",
-    image: python,
-  },
-  {
-    title: "SQL Certification",
-    image: sql,
-  },
-  {
-    title: "Big Data",
-    image: BigData,
-  },
-  {
-    title: "Microsoft Fabric",
-    image: microsoftfabric,
-  },
-  {
-    title: "Machine Learning",
-    image: machinelearning,
-  },
-
+  { title: "Backend Development", image: backend },
+  { title: "Cloud Computing", image: cloud },
+  { title: "IBM Certification", image: ibm },
+  { title: "JavaScript Certification", image: js },
+  { title: "Python Certification", image: python },
+  { title: "SQL Certification", image: sql },
+  { title: "Big Data", image: BigData },
+  { title: "Microsoft Fabric", image: microsoftfabric },
+  { title: "Machine Learning", image: machinelearning },
 ]
 
-const Certificates = () => {
+export default function Certificates() {
+
   const [selected, setSelected] = useState(null)
 
   return (
-    <section id="certificates" className="py-32 border-t border-neutral-800">
+
+    <section
+      id="certificates"
+      className="py-28 border-t border-neutral-800 scroll-mt-24"
+    >
+
       <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-4xl font-bold mb-16">Certificates</h2>
 
-        <div className="grid md:grid-cols-3 gap-10">
-  {certificates.map((cert, i) => (
-      <div
-        key={i}
-        onClick={() => setSelected(cert.image)}
-        className="cursor-pointer bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden hover:border-blue-500 transition group fade-up"
-        style={{ animationDelay: `${i * 0.15}s` }}
-      >
-        <div className="overflow-hidden">
-          <img
-            src={cert.image}
-            alt={cert.title}
-            className="w-full h-52 object-cover group-hover:scale-105 transition duration-500"
-          />
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+          Certificates
+        </h2>
+
+        {/* Grid */}
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+
+          {certificates.map((cert, i) => (
+
+            <div
+              key={i}
+              onClick={() => setSelected(cert.image)}
+              className="cursor-pointer bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden hover:border-blue-500 transition group"
+            >
+
+              <div className="overflow-hidden">
+
+                <img
+                  src={cert.image}
+                  alt={cert.title}
+                  className="w-full h-48 object-cover group-hover:scale-105 transition duration-500"
+                />
+
+              </div>
+
+              <div className="p-5">
+
+                <h3 className="text-sm font-medium text-neutral-300 text-center">
+                  {cert.title}
+                </h3>
+
+              </div>
+
+            </div>
+
+          ))}
+
         </div>
 
-        <div className="p-6">
-          <h3 className="text-sm font-medium text-neutral-300">
-            {cert.title}
-          </h3>
-        </div>
       </div>
-    ))}
-  </div>
 
-        </div>
 
-      {/* Modal */}
+      {/* Modal Preview */}
       {selected && (
+
         <div
-          onClick={() => setSelected(null)}
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-6"
+          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-6"
         >
-          <img
-            src={selected}
-            alt="Certificate"
-            className="max-h-[90vh] rounded-xl shadow-2xl"
-          />
+
+          <div className="relative max-w-5xl w-full flex justify-center">
+
+            {/* Close Button */}
+            <button
+              onClick={() => setSelected(null)}
+              className="absolute -top-10 right-0 text-white text-xl"
+            >
+              ✕
+            </button>
+
+            <img
+              src={selected}
+              alt="Certificate"
+              className="max-h-[90vh] rounded-xl shadow-2xl"
+            />
+
+          </div>
+
         </div>
+
       )}
+
     </section>
   )
 }
-
-export default Certificates

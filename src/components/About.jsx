@@ -1,54 +1,86 @@
-export default function About() {
-  return (
-    <section id="about" className="py-24 max-w-5xl mx-auto px-6">
+import profile from "../assets/profile.jpeg"
 
-      <h2 className="text-3xl font-bold text-center mb-10">
-        About Me
+export default function About() {
+
+  const skills = [
+    "React.js",
+    "JavaScript",
+    "PHP",
+    "MySQL",
+    "HTML",
+    "CSS",
+    "Tailwind",
+    "Typescript",
+    "Laravel",
+    "GitLab/GitHub",
+    "C",
+    "Python",
+    "Java",
+    "Cypress",
+    "Trello",
+    "Canva",
+    "Figma",
+  ]
+
+  return (
+    <section
+      id="about"
+      className="py-24 max-w-6xl mx-auto px-6 scroll-mt-24"
+    >
+
+      <h2 className="text-3xl font-bold text-center mb-16">
+        About
       </h2>
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 text-gray-300 leading-relaxed">
+      <div className="grid md:grid-cols-2 gap-12 items-center">
 
-        <p className="mb-6">
-          I am a Computer Science student at Bina Nusantara University with a specialization in Database Technology.
-          I have experience in marketing, education counseling, and software development, which has helped me build
-          both technical and communication skills.
-        </p>
+        {/* Profile Image */}
+        <div className="flex justify-center">
+          <img
+            src={profile}
+            alt="profile"
+            className="w-64 h-64 object-cover rounded-full border border-zinc-800 shadow-lg"
+          />
+        </div>
 
-        <p className="mb-6">
-          Currently, I am working as an Application Developer Intern where I develop and maintain web applications
-          using React.js for the frontend and PHP(Laravel Framework) with MySQL & Postgre for backend systems. I focus on building efficient,
-          secure, and scalable web solutions.
-        </p>
+        {/* About Text */}
+        <div>
 
-        <p>
-          I am passionate about building intelligent systems, exploring data science, and developing modern web
-          applications that solve real-world problems.
-        </p>
+          <p className="text-gray-300 leading-relaxed mb-6">
+            I am an Computer Science student at Bina Nusantara University
+            with a strong interest in software development and technology.
+            I enjoy building web applications and learning modern tools
+            that improve system performance, usability, and scalability.
+          </p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10 text-sm">
+          <p className="text-gray-300 leading-relaxed mb-8">
+            Currently working as an Application Developer Intern at
+            PT Trans Retail Indonesia where I develop and maintain
+            internal web applications using React.js, PHP, and MySQL.
+          </p>
 
-          <div className="bg-zinc-800 p-4 rounded-lg text-center">
-            Computer Science
-          </div>
+          {/* Skills */}
+          <div>
 
-          <div className="bg-zinc-800 p-4 rounded-lg text-center">
-            Fullstack Developer
-          </div>
+            <h3 className="text-lg font-semibold mb-4">
+              Tech Stack
+            </h3>
 
-          <div className="bg-zinc-800 p-4 rounded-lg text-center">
-            Data Analyst & Scientist
-          </div>
+            <div className="flex flex-wrap gap-3">
 
-          <div className="bg-zinc-800 p-4 rounded-lg text-center">
-            Public Speaking
-          </div>
+              {skills.map((skill, index) => (
 
-          <div className="bg-zinc-800 p-4 rounded-lg text-center">
-            Teamwork
-          </div>
+                <span
+                  key={index}
+                  className="bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg text-sm hover:border-blue-500 transition"
+                >
+                  {skill}
+                </span>
 
-          <div className="bg-zinc-800 p-4 rounded-lg text-center">
-            Adaptability
+              ))}
+
+            </div>
+
           </div>
 
         </div>
