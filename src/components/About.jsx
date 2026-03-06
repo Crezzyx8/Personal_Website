@@ -1,4 +1,4 @@
-import profile from "../assets/Profile.jpeg"
+import profile from "../assets/profile.jpeg"
 
 export default function About() {
 
