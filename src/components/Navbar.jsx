@@ -13,46 +13,42 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed w-full top-0 z-50 bg-black/70 backdrop-blur-md border-b border-white/10">
+    <nav className="fixed top-0 w-full z-50 bg-black/70 backdrop-blur-md border-b border-white/10">
       
-      {/* Container */}
-      <div className="max-w-5xl mx-auto px-6">
+      <div className="flex items-center justify-between h-16 px-8">
 
-        <div className="flex items-center justify-between h-16">
+        {/* Logo kiri */}
+        <h1 className="text-white text-lg font-semibold tracking-wide">
+          Filbert Huang
+        </h1>
 
-          {/* Logo */}
-          <h1 className="text-white font-semibold text-lg">
-            Filbert Huang
-          </h1>
-
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8 text-sm text-gray-300">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="hover:text-white transition duration-300"
-              >
-                {link.name}
-              </a>
-            ))}
-          </div>
-
-          {/* Mobile Button */}
-          <button
-            className="md:hidden text-white"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X size={26} /> : <Menu size={26} />}
-          </button>
-
+        {/* Desktop Menu kanan */}
+        <div className="hidden md:flex items-center gap-10 text-base font-medium text-gray-300">
+          {navLinks.map((link) => (
+            <a
+              key={link.name}
+              href={link.href}
+              className="hover:text-white transition duration-300"
+            >
+              {link.name}
+            </a>
+          ))}
         </div>
+
+        {/* Mobile Button */}
+        <button
+          className="md:hidden text-white"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
+
       </div>
 
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-black border-t border-white/10">
-          <div className="flex flex-col items-center py-6 gap-6 text-gray-300">
+          <div className="flex flex-col items-center py-6 gap-6 text-gray-300 text-lg">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -66,6 +62,7 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
     </nav>
   );
 }
