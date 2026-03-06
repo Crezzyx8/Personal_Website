@@ -1,4 +1,4 @@
-import profile from "../assets/profile.jpeg"
+import profile from "../assets/Profile.jpeg"
 
 export default function About() {
 
@@ -29,7 +29,7 @@ export default function About() {
     >
 
       <h2 className="text-3xl font-bold text-center mb-16">
-        About
+        About Myself
       </h2>
 
       <div className="grid md:grid-cols-2 gap-12 items-center">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { ChevronDown } from "lucide-react"
-import profile from "../assets/profile.jpeg"
+import profile from "../assets/Profile.jpeg"
 
 const roles = [
   "A Full Stack Developer",
@@ -38,7 +38,7 @@ const Hero = () => {
   }, [subIndex, index, deleting])
 
   return (
-    <section className="min-h-screen flex flex-col justify-center items-center px-6 md:px-10 text-center relative">
+    <section className="min-h-screen flex flex-col justify-center items-center px-6 md:px-10 text-center relative pt-28 md:pt-32">
 
       <div className="max-w-5xl">
 
@@ -47,7 +47,7 @@ const Hero = () => {
           <img
             src={profile}
             alt="profile"
-            className="w-32 h-32 md:w-36 md:h-36 rounded-full object-cover border-4 border-neutral-800 shadow-lg"
+            className="w-24 h-24 md:w-36 md:h-36 rounded-full object-cover border-4 border-neutral-800 shadow-lg"
           />
         </div>
 
@@ -72,8 +72,8 @@ const Hero = () => {
         <p className="mt-8 text-neutral-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
           Computer Science student specializing in Database Technology with
           hands-on experience in React.js, PHP, and MySQL.
-          Passionate about building scalable and efficient web applications.
-          also have experience in data analysis and visualization using Python and SQL.
+          Passionate about building scalable and efficient web applications,
+          and experienced in data analysis and visualization using Python and SQL.
         </p>
 
         {/* BUTTONS */}

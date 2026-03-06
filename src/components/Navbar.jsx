@@ -1,75 +1,71 @@
-import { useState, useEffect } from "react"
-import { Menu, X } from "lucide-react"
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
-const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false)
-  const [open, setOpen] = useState(false)
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  const menu = ["About", "Experience", "Projects", "Certificates", "Contact"]
+  const navLinks = [
+    { name: "About", href: "#about" },
+    { name: "Experience", href: "#experience" },
+    { name: "Projects", href: "#projects" },
+    { name: "Certificates", href: "#certificates" },
+    { name: "Contact", href: "#contact" },
+  ];
 
   return (
-    <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-black/70 backdrop-blur-xl border-b border-neutral-800"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="w-full px-6 md:px-12 py-5 flex justify-between items-center">
+    <nav className="fixed w-full top-0 z-50 bg-black/70 backdrop-blur-md border-b border-white/10">
+      
+      {/* Container */}
+      <div className="max-w-5xl mx-auto px-6">
 
-        {/* LOGO */}
-        <h1 className="text-xl md:text-2xl font-bold tracking-wide text-white">
-          Filbert Huang Personal Portfolio Website
-        </h1>
+        <div className="flex items-center justify-between h-16">
 
-        {/* DESKTOP MENU */}
-        <div className="hidden md:flex items-center gap-10 text-neutral-400">
-          {menu.map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              className="relative hover:text-white transition"
-            >
-              {item}
-            </a>
-          ))}
+          {/* Logo */}
+          <h1 className="text-white font-semibold text-lg">
+            Filbert Huang
+          </h1>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center gap-8 text-sm text-gray-300">
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                className="hover:text-white transition duration-300"
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+
+          {/* Mobile Button */}
+          <button
+            className="md:hidden text-white"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
+
         </div>
-
-        {/* MOBILE BUTTON */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="md:hidden text-white"
-        >
-          {open ? <X size={26} /> : <Menu size={26} />}
-        </button>
-
       </div>
 
-      {/* MOBILE MENU */}
-      {open && (
-        <div className="md:hidden bg-black/95 border-t border-neutral-800">
-          <div className="flex flex-col items-center gap-6 py-8 text-neutral-300">
-            {menu.map((item) => (
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden bg-black border-t border-white/10">
+          <div className="flex flex-col items-center py-6 gap-6 text-gray-300">
+            {navLinks.map((link) => (
               <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                onClick={() => setOpen(false)}
-                className="hover:text-white transition"
+                key={link.name}
+                href={link.href}
+                onClick={() => setIsOpen(false)}
+                className="hover:text-white"
               >
-                {item}
+                {link.name}
               </a>
             ))}
           </div>
         </div>
       )}
     </nav>
-  )
+  );
 }
-
-export default Navbar
