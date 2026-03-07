@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { ChevronDown } from "lucide-react"
-import profile from "../assets/Profile.jpeg"
+import profile from "../assets/profile.jpeg"
 
 const roles = [
   "A Full Stack Developer",
