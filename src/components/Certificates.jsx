@@ -9,6 +9,7 @@ import sql from "../assets/SQL.jpg"
 import BigData from "../assets/BigData.jpg"
 import microsoftfabric from "../assets/Fabric.jpeg"
 import machinelearning from "../assets/machinelearning.jpg"
+import Hive from "../assets/Data Using Hive.png"
 
 const certificates = [
   { title: "Backend Development", image: backend },
@@ -20,6 +21,7 @@ const certificates = [
   { title: "Big Data", image: BigData },
   { title: "Microsoft Fabric", image: microsoftfabric },
   { title: "Machine Learning", image: machinelearning },
+  {title: "Data Using Hive", image: Hive},
 ]
 
 export default function Certificates() {
