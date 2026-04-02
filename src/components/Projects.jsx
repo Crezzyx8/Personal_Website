@@ -12,7 +12,7 @@ export default function Projects() {
 
         const sortedRepos = data
           .sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0,9)
+          .slice(0,15)
 
         setRepos(sortedRepos)
       })
@@ -61,7 +61,7 @@ export default function Projects() {
               <div className="flex items-center gap-3">
 
                 <span>
-                  ⭐ {repo.stargazers_count}
+                   {repo.stargazers_count}
                 </span>
 
                 <FaGithub className="text-lg opacity-70 group-hover:opacity-100"/>
