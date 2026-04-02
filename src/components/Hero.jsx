@@ -3,11 +3,13 @@ import { ChevronDown } from "lucide-react"
 import profile from "../assets/profile.jpeg"
 
 const roles = [
-  "A Full Stack Developer",
+  "An Full Stack Developer",
   "An AI Enthusiast",
-  "A Backend Developer",
-  "A Data Science Enthusiast",
-  "A Data Analyst Enthusiast",
+  "An Backend Developer",
+  "An Data Science Enthusiast",
+  "An Data Analyst Enthusiast",
+  "An Computer Science Student",
+  "An Investment Enthusiast",
 ]
 
 const Hero = () => {
