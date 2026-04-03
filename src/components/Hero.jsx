@@ -10,6 +10,8 @@ const roles = [
   "An Data Analyst Enthusiast",
   "An Computer Science Student",
   "An Investment Enthusiast",
+  "An Tech Enthusiast",
+  "A Student at Binus University",
 ]
 
 const Hero = () => {
