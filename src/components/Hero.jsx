@@ -75,7 +75,7 @@ const Hero = () => {
         {/* DESCRIPTION */}
         <p className="mt-8 text-neutral-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
           Computer Science student specializing in Database Technology with
-          hands-on experience in React.js, PHP, and MySQL.
+          hands-on experience in React.js, PHP, Node.js, Laravel and MySQL.
           Passionate about building scalable and efficient web applications,
           and experienced in data analysis and visualization using Python and SQL.
         </p>
