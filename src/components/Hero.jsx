@@ -110,8 +110,8 @@ const Hero = () => {
             "Python",
             "HTML",
             "CSS",
-            "Trello",
-            "Canva",
+            "Node.js",
+            "Figma",
             "TypeScript",
             "Laravel",
           ].map((tech) => (
