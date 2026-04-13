@@ -6,7 +6,7 @@ import {
   FaMapMarkerAlt
 } from "react-icons/fa"
 
-import cv from "../assets/Filbert_CV.pdf"
+import cv from "../assets/Filbert_Huang_CV.pdf"
 
 export default function Contact() {
   return (
