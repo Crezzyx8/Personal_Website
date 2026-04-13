@@ -2,7 +2,7 @@ const experiences = [
   {
     role: "Application Developer (Internship)",
     company: "PT Trans Retail Indonesia",
-    period: "Apr 2025 – Present",
+    period: "Apr 2025 – Apr 2026",
     desc: [
       "Develop and maintain web applications using React.js for frontend development",
       "Build backend functionality using PHP Native with MySQL database",
