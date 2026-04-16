@@ -35,7 +35,6 @@ export default function About() {
 
       {/* Subtitle */}
       <p className="text-center text-gray-400 mb-16 mt-2">
-        Application Developer Intern @ PT Trans Retail Indonesia
       </p>
 
 
