@@ -10,6 +10,7 @@ import BigData from "../assets/BigData.jpg"
 import microsoftfabric from "../assets/Fabric.jpeg"
 import machinelearning from "../assets/machinelearning.jpg"
 import Hive from "../assets/Data Using Hive.png"
+import kiro from "../assets/spec_kiropng.png"
 
 const certificates = [
   { title: "Backend Development", image: backend },
@@ -22,6 +23,7 @@ const certificates = [
   { title: "Microsoft Fabric", image: microsoftfabric },
   { title: "Machine Learning", image: machinelearning },
   {title: "Data Using Hive", image: Hive},
+  {title: "Spec Development With Kiro", image: kiro}
 ]
 
 export default function Certificates() {
