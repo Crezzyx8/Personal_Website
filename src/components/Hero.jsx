@@ -2,51 +2,78 @@ import { useEffect, useState } from "react"
 import { ChevronDown } from "lucide-react"
 import profile from "../assets/profile.jpeg"
 
+const greetings = [
+  "Hi",
+  "Halo",
+  "Hello",
+  "你好",
+  "안녕하세요",
+  "こんにちは",
+]
+
 const roles = [
-  "A Full Stack Developer",
-  "An AI Enthusiast",
-  "A Backend Developer",
-  "A Data Science Enthusiast",
-  "A Data Analyst Enthusiast",
-  "A Computer Science Student",
-  "An Investment Enthusiast",
-  "A Tech Enthusiast",
-  "A Student at Binus University",
+  "Full-Stack Developer (React, Node.js, Vue.js, PHP, Cypress)",
+  "Backend Developer specializing in Laravel & Node.js",
+  "Data Analyst specializing in SQL, Power BI & Python",
+  "Applied AI & Machine Learning Practitioner",
+  "Database Engineer (MySQL & SQL Server)",
 ]
 
 const Hero = () => {
-  const [text, setText] = useState("")
-  const [index, setIndex] = useState(0)
-  const [subIndex, setSubIndex] = useState(0)
-  const [deleting, setDeleting] = useState(false)
+  const [greetText, setGreetText] = useState("")
+  const [greetIndex, setGreetIndex] = useState(0)
+  const [greetSub, setGreetSub] = useState(0)
+  const [greetDeleting, setGreetDeleting] = useState(false)
+
+  const [roleText, setRoleText] = useState("")
+  const [roleIndex, setRoleIndex] = useState(0)
+  const [roleSub, setRoleSub] = useState(0)
+  const [roleDeleting, setRoleDeleting] = useState(false)
 
   useEffect(() => {
-    if (subIndex === roles[index].length + 1 && !deleting) {
-      setTimeout(() => setDeleting(true), 1200)
-      return
+    let timeout
+
+    if (greetSub === greetings[greetIndex].length && !greetDeleting) {
+      timeout = setTimeout(() => setGreetDeleting(true), 1500)
+    } else if (greetSub === 0 && greetDeleting) {
+      setGreetDeleting(false)
+      setGreetIndex((prev) => (prev + 1) % greetings.length)
+    } else {
+      timeout = setTimeout(() => {
+        setGreetSub((prev) => prev + (greetDeleting ? -1 : 1))
+      }, greetDeleting ? 40 : 80)
     }
 
-    if (subIndex === 0 && deleting) {
-      setDeleting(false)
-      setIndex((prev) => (prev + 1) % roles.length)
-      return
-    }
-
-    const timeout = setTimeout(() => {
-      setSubIndex((prev) => prev + (deleting ? -1 : 1))
-    }, deleting ? 40 : 70)
-
-    setText(roles[index].substring(0, subIndex))
+    setGreetText(greetings[greetIndex].substring(0, greetSub))
 
     return () => clearTimeout(timeout)
-  }, [subIndex, index, deleting])
+  }, [greetSub, greetIndex, greetDeleting])
+
+  useEffect(() => {
+    let timeout
+
+    if (roleSub === roles[roleIndex].length && !roleDeleting) {
+      timeout = setTimeout(() => setRoleDeleting(true), 1200)
+    } else if (roleSub === 0 && roleDeleting) {
+      setRoleDeleting(false)
+      setRoleIndex((prev) => (prev + 1) % roles.length)
+    } else {
+      timeout = setTimeout(() => {
+        setRoleSub((prev) => prev + (roleDeleting ? -1 : 1))
+      }, roleDeleting ? 30 : 60)
+    }
+
+    setRoleText(roles[roleIndex].substring(0, roleSub))
+
+    return () => clearTimeout(timeout)
+  }, [roleSub, roleIndex, roleDeleting])
 
   return (
     <section className="min-h-screen flex flex-col justify-center items-center px-6 md:px-10 text-center relative pt-28 md:pt-32">
 
       <div className="max-w-5xl">
 
-        {/* PROFILE IMAGE */}
+        {/* PROFILE */}
         <div className="mb-8 flex justify-center">
           <img
             src={profile}
@@ -55,9 +82,13 @@ const Hero = () => {
           />
         </div>
 
-        {/* NAME */}
+        {/* 🔥 GREETING + NAME */}
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight">
-          Hi, I'm{" "}
+          <span className="text-blue-500">
+            {greetText}
+            <span className="animate-pulse">|</span>
+          </span>{" "}
+          I'm{" "}
           <span className="relative inline-block">
             <span className="relative z-10 text-white">
               Filbert
@@ -66,9 +97,9 @@ const Hero = () => {
           </span>
         </h1>
 
-        {/* TYPING ROLE */}
+        {/* 🔥 ROLE (tetap ada) */}
         <h2 className="mt-6 text-xl sm:text-2xl md:text-3xl font-semibold text-blue-500 min-h-[40px]">
-          {text}
+          {roleText}
           <span className="animate-pulse">|</span>
         </h2>
 
@@ -82,7 +113,6 @@ const Hero = () => {
 
         {/* BUTTONS */}
         <div className="mt-12 flex justify-center gap-6 flex-wrap">
-
           <a
             href="#projects"
             className="px-8 py-3 bg-blue-600 hover:bg-blue-700 transition rounded-xl shadow-lg shadow-blue-600/20 hover:scale-105"
@@ -96,38 +126,11 @@ const Hero = () => {
           >
             Contact Me
           </a>
-
-        </div>
-
-        {/* TECH STACK */}
-        <div className="mt-14 flex flex-wrap justify-center gap-4 text-sm text-neutral-400">
-
-          {[
-            "React",
-            "PHP",
-            "MySQL",
-            "JavaScript",
-            "Python",
-            "HTML",
-            "CSS",
-            "Node.js",
-            "Figma",
-            "TypeScript",
-            "Laravel",
-          ].map((tech) => (
-            <span
-              key={tech}
-              className="px-4 py-2 bg-neutral-900 border border-neutral-800 rounded-full hover:border-blue-500 hover:text-white hover:scale-105 transition"
-            >
-              {tech}
-            </span>
-          ))}
-
         </div>
 
       </div>
 
-      {/* SCROLL INDICATOR */}
+      {/* SCROLL */}
       <div className="absolute bottom-10 animate-bounce text-neutral-500">
         <ChevronDown size={28} />
       </div>
