@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 const STORAGE_KEY = "filbert_tictactoe_settings_v3";
 
+
 const BOARD_OPTIONS = {
   "3x3": { size: 3, target: 3, label: "3x3 / Win 3" },
   "4x4": { size: 4, target: 3, label: "4x4 / Win 3" },
