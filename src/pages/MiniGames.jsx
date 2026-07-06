@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import TicTacToe from "../components/games/TicTacToe";
+import TicTacToe from "../components/Games/TicTacToe";
 
 function MiniGames() {
   return (
