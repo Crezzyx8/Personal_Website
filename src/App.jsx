@@ -1,39 +1,16 @@
-import Navbar from "./components/Navbar"
-import Hero from "./components/Hero"
-import About from "./components/About"
-import Experience from "./components/Experience"
-import Projects from "./components/Projects"
-import Certificates from "./components/Certificates"
-import Contact from "./components/Contact"
-import { useEffect } from "react"
-
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import MiniGames from "./pages/MiniGames";
 
 function App() {
-  useEffect(() => {
-  const reveals = document.querySelectorAll(".reveal")
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("active")
-      }
-    })
-  }, { threshold: 0.2 })
-
-  reveals.forEach((el) => observer.observe(el))
-}, [])
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-black to-neutral-900 text-white">
-      <Navbar />
-      <Hero />
-      <About />
-      <Experience />
-      <Projects />
-      <Certificates />
-      <Contact />
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/games" element={<MiniGames />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

@@ -13,6 +13,7 @@ import Hive from "../assets/Data Using Hive.png"
 import kiro from "../assets/spec_kiropng.png"
 import DS from "../assets/BelajarDasarDataScience.jpeg"
 import SQL from "../assets/BelajarDasarSQL.jpeg"
+import data from "../assets/Fundamental.png"
 
 const certificates = [
   { title: "Backend Development", image: backend },
@@ -28,6 +29,7 @@ const certificates = [
   {title: "Spec Development With Kiro", image: kiro},
   {title: "Belajar Dasar SQL", image: SQL},
   {title: "Belajar Dasar Data Science", image: DS},
+  {title: "Fundamental Pemrosesan Data", image: data}
 ]
 
 export default function Certificates() {

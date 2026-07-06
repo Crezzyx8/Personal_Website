@@ -1,68 +1,37 @@
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
-export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const navLinks = [
-    { name: "About", href: "#about" },
-    { name: "Experience", href: "#experience" },
-    { name: "Projects", href: "#projects" },
-    { name: "Certificates", href: "#certificates" },
-    { name: "Contact", href: "#contact" },
-  ];
-
+function Navbar() {
   return (
-    <nav className="fixed top-0 w-full z-50 bg-black/70 backdrop-blur-md border-b border-white/10">
-      
-      <div className="flex items-center justify-between h-16 px-8">
-
-        {/* Logo kiri */}
-        <h1 className="text-white text-lg font-semibold tracking-wide">
+    <nav className="w-full fixed top-0 left-0 z-50 bg-black/80 backdrop-blur border-b border-white/10">
+      <div className="max-w-[1800px] mx-auto px-8 py-5 flex items-center justify-between">
+        <Link to="/" className="text-white font-bold text-2xl">
           Filbert Huang
-        </h1>
+        </Link>
 
-        {/* Desktop Menu kanan */}
-        <div className="hidden md:flex items-center gap-10 text-base font-medium text-gray-300">
-          {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="hover:text-white transition duration-300"
-            >
-              {link.name}
-            </a>
-          ))}
+        <div className="flex items-center gap-10 text-lg">
+          <a href="#about" className="text-white/80 hover:text-white transition">
+            About
+          </a>
+          <a href="#experience" className="text-white/80 hover:text-white transition">
+            Experience
+          </a>
+          <a href="#projects" className="text-white/80 hover:text-white transition">
+            Projects
+          </a>
+          <a href="#certificates" className="text-white/80 hover:text-white transition">
+            Certificates
+          </a>
+          <a href="#contact" className="text-white/80 hover:text-white transition">
+            Contact
+          </a>
+
+          <Link to="/games" className="text-white/80 hover:text-blue-400 transition">
+            Games
+          </Link>
         </div>
-
-        {/* Mobile Button */}
-        <button
-          className="md:hidden text-white"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
-
       </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-black border-t border-white/10">
-          <div className="flex flex-col items-center py-6 gap-6 text-gray-300 text-lg">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className="hover:text-white"
-              >
-                {link.name}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-
     </nav>
   );
 }
+
+export default Navbar;
