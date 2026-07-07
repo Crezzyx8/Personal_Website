@@ -46,6 +46,14 @@ body {
   animation: fadeUp 0.8s ease forwards;
 }
 
+.perspective {
+  perspective: 1000px;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
 
 @keyframes fadeIn {
   to {

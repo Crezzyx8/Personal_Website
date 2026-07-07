@@ -24,7 +24,6 @@ import {
 
 export default function About() {
 
-  // 🔥 PRIMARY (highlight)
   const primarySkills = [
     { name: "React", icon: <FaReact /> },
     { name: "Node.js", icon: <FaNodeJs /> },
@@ -32,7 +31,6 @@ export default function About() {
     { name: "Python", icon: <FaPython /> },
   ]
 
-  // ⚪ SECONDARY (lebih subtle)
   const secondarySkills = [
     { name: "JavaScript", icon: <SiJavascript /> },
     { name: "TypeScript", icon: <SiTypescript /> },
