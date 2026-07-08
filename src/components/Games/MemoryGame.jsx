@@ -12,6 +12,8 @@ const difficultyConfig = {
   hard: { label: "Hard", rows: 6, cols: 6 },
 }
 
+const STORAGE_KEY = "filbert_memory_history_v1"
+
 function shuffleArray(array) {
   const arr = [...array]
   for (let i = arr.length - 1; i > 0; i--) {
@@ -46,6 +48,8 @@ export default function MemoryGame() {
   const [seconds, setSeconds] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
+  const [history, setHistory] = useState([])
+  const [hasSavedWin, setHasSavedWin] = useState(false)
 
   const config = difficultyConfig[difficulty]
   const totalPairs = (config.rows * config.cols) / 2
@@ -57,6 +61,48 @@ export default function MemoryGame() {
     return "grid-cols-6"
   }, [difficulty])
 
+  const appendHistory = (resultLabel, extra = {}) => {
+    setHistory((prev) => {
+      const newEntry = {
+        id: Date.now(),
+        result: resultLabel,
+        difficulty: config.label,
+        board: `${config.rows}x${config.cols}`,
+        totalPairs,
+        moves,
+        time: seconds,
+        timestamp: new Date().toLocaleString(),
+        ...extra,
+      }
+
+      const updated = [newEntry, ...prev].slice(0, 30)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+      return updated
+    })
+  }
+
+  const historyStats = useMemo(() => {
+    const total = history.length
+    const completed = history.filter((item) => item.result === "Completed").length
+
+    const bestMoves =
+      history.length > 0
+        ? Math.min(...history.map((item) => item.moves ?? Infinity))
+        : null
+
+    const bestTime =
+      history.length > 0
+        ? Math.min(...history.map((item) => item.time ?? Infinity))
+        : null
+
+    return {
+      total,
+      completed,
+      bestMoves: bestMoves === Infinity ? null : bestMoves,
+      bestTime: bestTime === Infinity ? null : bestTime,
+    }
+  }, [history])
+
   const resetGame = (level = difficulty) => {
     setCards(generateCards(level))
     setSelectedCards([])
@@ -65,11 +111,23 @@ export default function MemoryGame() {
     setSeconds(0)
     setIsRunning(false)
     setIsChecking(false)
+    setHasSavedWin(false)
   }
 
   useEffect(() => {
     resetGame(difficulty)
   }, [difficulty])
+
+  useEffect(() => {
+    try {
+      const savedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")
+      if (Array.isArray(savedHistory)) {
+        setHistory(savedHistory)
+      }
+    } catch (err) {
+      console.error("Failed to load memory history:", err)
+    }
+  }, [])
 
   useEffect(() => {
     if (!isRunning || hasWon) return
@@ -80,6 +138,14 @@ export default function MemoryGame() {
 
     return () => clearInterval(timer)
   }, [isRunning, hasWon])
+
+  useEffect(() => {
+    if (!hasWon || hasSavedWin) return
+
+    appendHistory("Completed")
+    setHasSavedWin(true)
+    setIsRunning(false)
+  }, [hasWon, hasSavedWin])
 
   const handleCardClick = (card) => {
     if (isChecking) return
@@ -106,7 +172,7 @@ export default function MemoryGame() {
         setTimeout(() => {
           setCards((prev) =>
             prev.map((c) =>
-              c.icon === first.icon && (c.id === first.id || c.id === second.id)
+              c.id === first.id || c.id === second.id
                 ? { ...c, matched: true }
                 : c
             )
@@ -135,6 +201,11 @@ export default function MemoryGame() {
     const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0")
     const secs = String(totalSeconds % 60).padStart(2, "0")
     return `${mins}:${secs}`
+  }
+
+  const formatHistoryTime = (value) => {
+    if (value === null || value === undefined) return "-"
+    return formatTime(value)
   }
 
   return (
@@ -257,6 +328,114 @@ export default function MemoryGame() {
             </button>
           )
         })}
+      </div>
+
+      {/* History Panel */}
+      <div className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4 md:p-6">
+        <div className="flex items-start justify-between gap-3 mb-5">
+          <div>
+            <h2 className="text-2xl font-semibold text-white">
+              Match History
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Saved records from your Memory Match sessions.
+            </p>
+          </div>
+
+          <button
+            onClick={() => {
+              setHistory([])
+              localStorage.setItem(STORAGE_KEY, JSON.stringify([]))
+            }}
+            className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-gray-300 hover:border-red-500/40 hover:text-red-300 transition"
+          >
+            Clear
+          </button>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+          <div className="rounded-xl border border-zinc-800 bg-black/30 p-3">
+            <p className="text-xs text-gray-400">Total Plays</p>
+            <p className="text-lg font-semibold text-white">
+              {historyStats.total}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-zinc-800 bg-black/30 p-3">
+            <p className="text-xs text-gray-400">Completed</p>
+            <p className="text-lg font-semibold text-emerald-400">
+              {historyStats.completed}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-zinc-800 bg-black/30 p-3">
+            <p className="text-xs text-gray-400">Best Moves</p>
+            <p className="text-lg font-semibold text-blue-400">
+              {historyStats.bestMoves ?? "-"}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-zinc-800 bg-black/30 p-3">
+            <p className="text-xs text-gray-400">Best Time</p>
+            <p className="text-lg font-semibold text-yellow-400">
+              {formatHistoryTime(historyStats.bestTime)}
+            </p>
+          </div>
+        </div>
+
+        {/* History List */}
+        {history.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-zinc-800 p-4 text-sm text-gray-500">
+            No completed runs yet. Finish a board and your history will appear here.
+          </div>
+        ) : (
+          <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
+            {history.map((item) => (
+              <div
+                key={item.id}
+                className="rounded-2xl border border-zinc-800 bg-black/30 p-4"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
+                      {item.result}
+                    </span>
+                    <span className="text-sm text-white font-medium">
+                      {item.difficulty} • {item.board}
+                    </span>
+                  </div>
+
+                  <span className="text-xs text-gray-500 whitespace-nowrap">
+                    {item.timestamp}
+                  </span>
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                  <div className="rounded-xl border border-zinc-800 px-3 py-2">
+                    <p className="text-gray-500">Moves</p>
+                    <p className="text-white mt-1">{item.moves}</p>
+                  </div>
+
+                  <div className="rounded-xl border border-zinc-800 px-3 py-2">
+                    <p className="text-gray-500">Time</p>
+                    <p className="text-white mt-1">{formatTime(item.time)}</p>
+                  </div>
+
+                  <div className="rounded-xl border border-zinc-800 px-3 py-2">
+                    <p className="text-gray-500">Pairs</p>
+                    <p className="text-white mt-1">{item.totalPairs}</p>
+                  </div>
+
+                  <div className="rounded-xl border border-zinc-800 px-3 py-2">
+                    <p className="text-gray-500">Difficulty</p>
+                    <p className="text-white mt-1">{item.difficulty}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )
