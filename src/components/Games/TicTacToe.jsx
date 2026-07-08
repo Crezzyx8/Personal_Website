@@ -546,24 +546,57 @@ function TicTacToe() {
     return `Bot (${symbol})`;
   };
 
-  const appendHistory = (resultLabel) => {
-    const entry = {
+  const appendHistory = (resultLabel, extra = {}) => {
+  setHistory((prev) => {
+    const newEntry = {
       id: Date.now(),
-      round: history.length + 1,
-      result: resultLabel,
-      boardLabel: label,
-      mode:
-        gameMode === "bot"
-          ? `Vs Bot / ${difficulty}`
-          : "PvP",
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
+      round: currentRound,
+      result: resultLabel, // "Win" | "Lose" | "Draw"
+      boardLabel,
+      boardSize,
+      winLength,
+      mode, // bot / local
+      difficulty: mode === "bot" ? difficulty : "local",
+      playerSymbol,
+      botSymbol: mode === "bot" ? botSymbol : "-",
+      matchMode,
+      timestamp: new Date().toLocaleString(),
+      ...extra,
+    }
 
-    setHistory((prev) => [entry, ...prev].slice(0, 10));
-  };
+    const updated = [newEntry, ...prev].slice(0, 30)
+
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}")
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            ...saved,
+            history: updated,
+          })
+        )
+      } catch (err) {
+        console.error("Failed to save history:", err)
+      }
+
+      return updated
+    })
+  }
+
+  const historyStats = useMemo(() => {
+  const total = history.length
+  const wins = history.filter((item) => item.result === "Win").length
+  const losses = history.filter((item) => item.result === "Lose").length
+  const draws = history.filter((item) => item.result === "Draw").length
+
+  return {
+    total,
+    wins,
+    losses,
+    draws,
+    winRate: total ? Math.round((wins / total) * 100) : 0,
+  }
+}, [history])
 
   const checkMatchWinner = (nextScore) => {
     if (!matchTarget) return null;
@@ -1056,39 +1089,157 @@ function TicTacToe() {
           </div>
 
           <div className="rounded-3xl border border-white/10 bg-[#09090c] p-4 sm:p-6">
-            <h3 className="text-xl sm:text-2xl font-semibold text-white mb-4">
-              Round History
-            </h3>
+  <div className="flex items-start justify-between gap-3 mb-5">
+    <div>
+      <h3 className="text-xl sm:text-2xl font-semibold text-white">
+        Match History
+      </h3>
+      <p className="text-sm text-gray-400 mt-1">
+        Saved records from your Tic Tac Toe matches.
+      </p>
+    </div>
 
-            {history.length === 0 ? (
-              <p className="text-sm text-gray-400">
-                No rounds recorded yet. Start a match and the history will appear here.
-              </p>
-            ) : (
-              <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1">
-                {history.map((item) => (
-                  <div
-                    key={item.id}
-                    className="rounded-2xl border border-white/10 bg-black/40 p-4"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-white font-medium">
-                          Round {item.round} — {item.result}
-                        </p>
-                        <p className="text-sm text-gray-400 mt-1">
-                          {item.boardLabel} • {item.mode}
-                        </p>
-                      </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">
-                        {item.timestamp}
-                      </span>
-                    </div>
+    <button
+      onClick={() => {
+        setHistory([]);
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+          localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+              ...saved,
+              history: [],
+            })
+          );
+        } catch (err) {
+          console.error("Failed to clear history:", err);
+        }
+      }}
+      className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-gray-300 hover:border-red-500/40 hover:text-red-300 transition"
+    >
+      Clear
+    </button>
+  </div>
+
+  {/* Stats */}
+  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-5">
+    <div className="rounded-2xl border border-white/10 bg-black/40 p-3">
+      <p className="text-[11px] uppercase tracking-wide text-gray-500">Total</p>
+      <p className="mt-1 text-lg font-semibold text-white">{historyStats.total}</p>
+    </div>
+
+    <div className="rounded-2xl border border-white/10 bg-black/40 p-3">
+      <p className="text-[11px] uppercase tracking-wide text-gray-500">Wins</p>
+      <p className="mt-1 text-lg font-semibold text-emerald-400">{historyStats.wins}</p>
+    </div>
+
+    <div className="rounded-2xl border border-white/10 bg-black/40 p-3">
+      <p className="text-[11px] uppercase tracking-wide text-gray-500">Losses</p>
+      <p className="mt-1 text-lg font-semibold text-red-400">{historyStats.losses}</p>
+    </div>
+
+    <div className="rounded-2xl border border-white/10 bg-black/40 p-3">
+      <p className="text-[11px] uppercase tracking-wide text-gray-500">Draws</p>
+      <p className="mt-1 text-lg font-semibold text-yellow-400">{historyStats.draws}</p>
+    </div>
+
+    <div className="rounded-2xl border border-white/10 bg-black/40 p-3">
+      <p className="text-[11px] uppercase tracking-wide text-gray-500">Win Rate</p>
+      <p className="mt-1 text-lg font-semibold text-blue-400">{historyStats.winRate}%</p>
+    </div>
+  </div>
+
+      {/* History List */}
+      {history.length === 0 ? (
+        <p className="text-sm text-gray-400">
+          No matches recorded yet. Start a game and your match history will appear here.
+        </p>
+      ) : (
+        <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
+          {history.map((item) => {
+            const resultColor =
+              item.result === "Win"
+                ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/10"
+                : item.result === "Lose"
+                ? "text-red-400 border-red-500/20 bg-red-500/10"
+                : "text-yellow-300 border-yellow-500/20 bg-yellow-500/10";
+
+            return (
+              <div
+                key={item.id}
+                className="rounded-2xl border border-white/10 bg-black/40 p-4"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className={`rounded-full border px-3 py-1 text-xs font-medium ${resultColor}`}
+                    >
+                      {item.result}
+                    </span>
+
+                    <span className="text-sm text-white font-medium">
+                      Round {item.round}
+                    </span>
                   </div>
-                ))}
+
+                  <span className="text-xs text-gray-500 whitespace-nowrap">
+                    {item.timestamp}
+                  </span>
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                  <div className="rounded-xl border border-white/10 px-3 py-2">
+                    <p className="text-gray-500">Board</p>
+                    <p className="text-white mt-1">
+                      {item.boardLabel || `${item.boardSize}x${item.boardSize}`}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 px-3 py-2">
+                    <p className="text-gray-500">Mode</p>
+                    <p className="text-white mt-1">{item.mode}</p>
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 px-3 py-2">
+                    <p className="text-gray-500">Difficulty</p>
+                    <p className="text-white mt-1">{item.difficulty}</p>
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 px-3 py-2">
+                    <p className="text-gray-500">Player</p>
+                    <p className="text-white mt-1">{item.playerSymbol}</p>
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 px-3 py-2">
+                    <p className="text-gray-500">Bot / Opponent</p>
+                    <p className="text-white mt-1">{item.botSymbol}</p>
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 px-3 py-2">
+                    <p className="text-gray-500">Match Type</p>
+                    <p className="text-white mt-1">{item.matchMode}</p>
+                  </div>
+
+                  {item.playerScore !== undefined && (
+                    <div className="rounded-xl border border-white/10 px-3 py-2">
+                      <p className="text-gray-500">Player Score</p>
+                      <p className="text-white mt-1">{item.playerScore}</p>
+                    </div>
+                  )}
+
+                  {item.opponentScore !== undefined && (
+                    <div className="rounded-xl border border-white/10 px-3 py-2">
+                      <p className="text-gray-500">Opponent Score</p>
+                      <p className="text-white mt-1">{item.opponentScore}</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
 
           <div className="rounded-3xl border border-white/10 bg-[#09090c] p-4 sm:p-6">
             <h3 className="text-xl sm:text-2xl font-semibold text-white mb-4">
