@@ -1,5 +1,19 @@
 const experiences = [
   {
+    role: "Technical Writer",
+    company: "PT Protergo Siber Sekuriti",
+    period: "Aug 2026 – Present",
+    desc: [
+      "Create, edit, and maintain technical documentation, including user guides, installation manuals, configuration guides, technical specifications, and release notes.",
+      "Prepare internal documentation such as Standard Operating Procedures (SOPs), knowledge base articles, and training materials.",
+      "Collaborate with Product, Engineering, and Technical Support teams to gather technical information and translate it into easy-to-understand documentation.",
+      "Review and update existing documentation to ensure accuracy, consistency, and completeness.",
+      "Organize and maintain documentation repositories and version control.",
+      "Assist in documenting product features, testing results, and implementation processes.",
+      "Conduct research on cybersecurity technologies and industry best practices to support documentation efforts."
+    ]
+  },
+  {
     role: "Application Developer (Internship)",
     company: "PT Trans Retail Indonesia",
     period: "Apr 2025 – Apr 2026",

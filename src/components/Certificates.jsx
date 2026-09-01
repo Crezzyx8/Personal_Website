@@ -14,6 +14,10 @@ import kiro from "../assets/spec_kiropng.png"
 import DS from "../assets/BelajarDasarDataScience.jpeg"
 import SQL from "../assets/BelajarDasarSQL.jpeg"
 import data from "../assets/Fundamental.png"
+import aws from "../assets/aws.jpg"
+import saylor from "../assets/Saylor.png"
+import javascript from "../assets/java.jpg"
+import finance from "../assets/finance.jpg"
 
 const certificates = [
   { title: "Backend Development", image: backend },
@@ -29,7 +33,11 @@ const certificates = [
   {title: "Spec Development With Kiro", image: kiro},
   {title: "Belajar Dasar SQL", image: SQL},
   {title: "Belajar Dasar Data Science", image: DS},
-  {title: "Fundamental Pemrosesan Data", image: data}
+  {title: "Fundamental Pemrosesan Data", image: data},
+  {title: "AWS AI Academy 2026", image: aws},
+  {title: "Python For Data Science", image: saylor },
+  {title: "Javascript (Intermediate)", image: javascript},
+  {title: "Finance", image: finance}
 ]
 
 export default function Certificates() {
