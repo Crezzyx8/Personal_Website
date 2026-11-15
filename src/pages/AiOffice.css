@@ -46,7 +46,7 @@
 .fh-scene, .fh-scene-loading { height: clamp(505px, calc(100svh - 105px), 900px); }
 .fh-stage-caption { justify-content: center; }
 .fh-scene-controls button[aria-pressed=true] { background: #d2c4eb; color: #272033; }
-.fh-stage:has(.fh-fallback) :is(.fh-stage-caption, .fh-orbit-hint) { display: none; }
+.fh-stage:has(.fh-fallback) :is(.fh-camera-control, .fh-orbit-hint) { display: none; }
 .fh-stage .fh-agent-detail {
   position: absolute;
   bottom: 72px;
@@ -72,4 +72,33 @@
   display: flex;
   background: #ffffff06;
   color: var(--fg);
+}
+
+.fh-fallback-head {
+  animation: fh-agent-nod 1.9s var(--typing-delay) ease-in-out infinite alternate;
+}
+.fh-fallback-arm {
+  transform-origin: 20px 42px;
+  animation: fh-agent-type .42s var(--typing-delay) ease-in-out infinite alternate;
+}
+.fh-fallback-screen {
+  animation: fh-monitor-glow 1.3s var(--typing-delay) ease-in-out infinite alternate;
+}
+.fh-scene[data-paused="true"] :is(.fh-fallback-head, .fh-fallback-arm, .fh-fallback-screen) {
+  animation-play-state: paused;
+}
+@keyframes fh-agent-nod {
+  from { transform: translateY(-1px); }
+  to { transform: translateY(3px); }
+}
+@keyframes fh-agent-type {
+  from { transform: rotate(-7deg); }
+  to { transform: rotate(9deg); }
+}
+@keyframes fh-monitor-glow {
+  from { opacity: .45; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fh-office :is(.fh-fallback-head, .fh-fallback-arm, .fh-fallback-screen) { animation: none; }
 }

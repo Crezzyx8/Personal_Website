@@ -6,8 +6,10 @@ import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 from threading import Lock, Thread
+from time import monotonic
 from typing import Literal
 from urllib.parse import parse_qs, urlsplit
 from urllib.request import Request, urlopen
@@ -18,6 +20,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from clipping_personas import REVIEW_CLIP, SELECT_CLIP
+from tiktok import upload_draft
 
 router = APIRouter(prefix="/production")
 ROOT = Path(__file__).resolve().parent
@@ -84,9 +87,27 @@ def run(folder, args, timeout=1800):
                           errors="replace", check=True, timeout=timeout).stdout
 
 
+def ollama_model():
+    return os.getenv("OFFICE_OLLAMA_MODEL", "qwen3:4b")
+
+
+@lru_cache(maxsize=1)
+def check_ollama(model, _window):
+    try:
+        with urlopen("http://127.0.0.1:11434/api/tags", timeout=1) as response:
+            models = json.load(response).get("models", [])
+        return any(item.get("name") == model for item in models)
+    except (OSError, ValueError):
+        return False
+
+
+def ollama_ready():
+    return check_ollama(ollama_model(), int(monotonic() // 10))
+
+
 def chat(system, data, *, max_tokens=400):
     payload = {
-        "model": os.getenv("OFFICE_OLLAMA_MODEL", "qwen3:4b"),
+        "model": ollama_model(),
         "stream": False, "think": False, "format": "json", "keep_alive": 0,
         "options": {"temperature": 0, "num_ctx": 8192, "num_predict": max_tokens},
         "messages": [{"role": "system", "content": system},
@@ -251,8 +272,15 @@ def process(job):
 
 @router.get("/jobs")
 def list_jobs():
-    return {"jobs": read_jobs(), "youtube_configured": TOKEN.is_file(),
-            "whisper_configured": MODEL.is_file()}
+    return {
+        "jobs": read_jobs(),
+        "youtube_configured": TOKEN.is_file(),
+        "tiktok_configured": bool(os.getenv("OFFICE_TIKTOK_ACCESS_TOKEN")),
+        "whisper_configured": MODEL.is_file(),
+        "ffmpeg_available": bool(shutil.which("ffmpeg") and shutil.which("ffprobe")),
+        "ollama_model": ollama_model(),
+        "ollama_ready": ollama_ready(),
+    }
 
 
 @router.get("/jobs/{job_id}/clip")
@@ -269,6 +297,38 @@ def get_clip(job_id: str):
     return FileResponse(folder / "clip.mp4", media_type="video/mp4")
 
 
+
+@router.post("/jobs/{job_id}/tiktok")
+def send_tiktok_draft(job_id: str):
+    if not os.getenv("OFFICE_TIKTOK_ACCESS_TOKEN"):
+        raise HTTPException(503, "Token TikTok belum dikonfigurasi di worker.")
+    if not re.fullmatch(r"[0-9a-f]{32}", job_id):
+        raise HTTPException(404, "Klip tidak ditemukan.")
+    if not LOCK.acquire(blocking=False):
+        raise HTTPException(409, "Worker sedang memproses tugas lain.")
+    try:
+        folder = JOBS / job_id
+        path = folder / "clip.mp4"
+        try:
+            job = json.loads((folder / "job.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            raise HTTPException(404, "Klip tidak ditemukan.") from error
+        if not job.get("clip_ready") or not path.is_file():
+            raise HTTPException(404, "Klip belum tersedia.")
+        if job.get("tiktok_publish_id"):
+            return {"publish_id": job["tiktok_publish_id"]}
+        try:
+            publish_id = upload_draft(path)
+        except ValueError as error:
+            raise HTTPException(502, str(error)) from error
+        except (OSError, KeyError) as error:
+            raise HTTPException(502, "TikTok gagal mengonfirmasi upload. Cek inbox TikTok sebelum mengulang.") from error
+        job["tiktok_publish_id"] = publish_id
+        change(job, job["status"], job["message"])
+        return {"publish_id": publish_id}
+    finally:
+        LOCK.release()
+
 @router.post("/jobs", status_code=202)
 def start(payload: ProductionRequest):
     try:
@@ -277,6 +337,8 @@ def start(payload: ProductionRequest):
         raise HTTPException(422, str(error)) from error
     if not MODEL.is_file() or not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
         raise HTTPException(503, "Siapkan FFmpeg, FFprobe, dan worker/models/ggml-base.bin.")
+    if not ollama_ready():
+        raise HTTPException(503, f"Jalankan Ollama dan siapkan model {ollama_model()}.")
     if not LOCK.acquire(blocking=False):
         raise HTTPException(409, "Satu video sedang diproses. Coba lagi setelah selesai.")
     try:

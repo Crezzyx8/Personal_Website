@@ -3,7 +3,7 @@ from urllib.error import URLError
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
-from production import LOCK, chat
+from production import LOCK, chat, ollama_model
 
 router = APIRouter(prefix="/digital-products")
 
@@ -55,7 +55,7 @@ def create_draft(payload: ProductRequest):
         answer = chat(PROMPT, payload.model_dump(), max_tokens=1600)
         return ProductDraft.model_validate(answer)
     except (URLError, TimeoutError) as error:
-        raise HTTPException(503, "Ollama belum siap. Cek server lokal dan model qwen3:4b.") from error
+        raise HTTPException(503, f"Ollama belum siap. Cek server lokal dan model {ollama_model()}.") from error
     except (ValidationError, ValueError, KeyError, TypeError) as error:
         raise HTTPException(502, "Model belum menghasilkan draft lengkap. Coba ulang dengan brief lebih pendek.") from error
     finally:

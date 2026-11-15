@@ -101,10 +101,10 @@ export default function AiOffice() {
           )}
           <div className="fh-stage-caption">
             <div className="fh-scene-controls" role="group" aria-label="Kontrol kantor 3D">
-              <button onClick={() => setCameraView('isometric')} aria-pressed={cameraView === 'isometric'}><Camera size={15} /> Isometrik</button>
-              <button onClick={() => setCameraView('front')} aria-pressed={cameraView === 'front'}>Depan</button>
+              <button className="fh-camera-control" onClick={() => setCameraView('isometric')} aria-pressed={cameraView === 'isometric'}><Camera size={15} /> Isometrik</button>
+              <button className="fh-camera-control" onClick={() => setCameraView('front')} aria-pressed={cameraView === 'front'}>Depan</button>
               <button onClick={() => setPaused(value => !value)} aria-pressed={paused}>{paused ? <Play size={15} /> : <Pause size={15} />}{paused ? 'Lanjut' : 'Jeda'}</button>
-              <button onClick={() => setResetKey(value => value + 1)}><RotateCcw size={15} /> Reset</button>
+              <button className="fh-camera-control" onClick={() => setResetKey(value => value + 1)}><RotateCcw size={15} /> Reset</button>
             </div>
           </div>
         </section>

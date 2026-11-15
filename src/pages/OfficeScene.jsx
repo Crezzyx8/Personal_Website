@@ -43,7 +43,7 @@ export default function OfficeScene({ agents, onSelect, paused, cameraView, rese
     Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12 })
     sun.shadow.normalBias = .04
     scene.add(sun)
-    const items = [], animated = []
+    const items = [], animated = [], heads = []
     function positionCamera(view) {
       const direction = new THREE.Vector3(...cameraPresets[view])
       direction.multiplyScalar(Math.max(1, 1.25 / camera.aspect))
@@ -139,11 +139,20 @@ export default function OfficeScene({ agents, onSelect, paused, cameraView, rese
         box(scene, x, .12, z + 1, 1, .08, .1, '#45505b')
         const person = new THREE.Group(); person.position.set(x, .7, z + .8); scene.add(person)
         box(person, 0, .43, 0, .55, .7, .4, colors[div])
-        box(person, 0, 1.04, 0, .29, 0, 0, '#cba588', true)
-        const hair = box(person, 0, 1.18, .02, .30, 0, 0, '#343039', true); hair.scale.y = .65
+        const head = new THREE.Group()
+        head.position.y = 1.04
+        person.add(head)
+        heads.push(head)
+        box(head, 0, 0, 0, .29, 0, 0, '#cba588', true)
+        const hair = box(head, 0, .14, .02, .30, 0, 0, '#343039', true)
+        hair.scale.y = .65
         for (const dx of [-.35, .35]) {
-          const arm = box(person, dx, .45, -.24, .16, .18, .65, colors[div]); animated.push(arm)
-          box(person, dx, .43, -.55, .16, .12, .18, '#cba588')
+          const arm = new THREE.Group()
+          arm.position.set(dx, .45, .06)
+          person.add(arm)
+          box(arm, 0, 0, -.29, .16, .18, .60, colors[div])
+          box(arm, 0, -.02, -.61, .16, .12, .18, '#cba588')
+          animated.push(arm)
         }
         person.traverse(obj => { if (obj.isMesh) { obj.userData.agent = agent; items.push(obj) } })
         const name = label(agent.name, x, 2.65, z + .65, '#303746', 2.2)
@@ -187,9 +196,17 @@ export default function OfficeScene({ agents, onSelect, paused, cameraView, rese
     let frame, time = 0, previous = performance.now()
     function animate(now) {
       frame = requestAnimationFrame(animate)
-      if (!pause.current && !reduced.matches) time += Math.min((now - previous) / 1000, .05)
+      if (!pause.current && !reduced.matches) {
+        time += Math.min((now - previous) / 1000, .05)
+        animated.forEach((arm, index) => {
+          arm.rotation.x = Math.sin(time * 6 + index * 1.3) * .19
+        })
+        heads.forEach((head, index) => {
+          head.rotation.x = Math.sin(time * 2 + index) * .12
+          head.position.y = 1.04 + Math.sin(time * 2 + index) * .03
+        })
+      }
       previous = now
-      animated.forEach((arm, i) => { arm.rotation.x = Math.sin(time * 5 + i * 1.3) * .06 })
       controls.update(); renderer.render(scene, camera)
     }
     frame = requestAnimationFrame(animate)
@@ -211,7 +228,7 @@ export default function OfficeScene({ agents, onSelect, paused, cameraView, rese
     action.view = cameraView
     action.positionCamera(cameraView)
   }, [cameraView, resetKey])
-  return <div className="fh-scene" ref={host}>{error && <>
+  return <div className="fh-scene" data-paused={paused} ref={host}>{error && <>
       <svg viewBox="0 0 1000 620" className="fh-fallback" role="img" aria-label="Denah kantor isometrik, mode kompatibilitas tanpa WebGL">
         <defs><linearGradient id="fh-fallback-floor-fill" x2="100%" y2="100%"><stop stopColor="#eddfc9"/><stop offset="1" stopColor="#c8b99e"/></linearGradient></defs>
         <ellipse cx="505" cy="460" rx="390" ry="100" fill="#374151" opacity=".15"/>
@@ -223,16 +240,19 @@ export default function OfficeScene({ agents, onSelect, paused, cameraView, rese
         </g>)}
         {agents.map((agent,i)=>{
           const x=250+(i%3)*205+(i>2?30:0), y=265+Math.floor(i/3)*120
-          return <g key={agent.name} transform={'translate('+x+' '+y+')'}>
+          return <g key={agent.name} transform={`translate(${x} ${y})`} style={{ '--typing-delay': `${-i * 0.29}s` }}>
             <path d="M-65 10 0-22 90 16 25 52Z" fill="#f5e8d0" stroke="#b7a993"/>
             <path d="M-60 13V65M80 21V75M25 50V93" stroke="#68717a" strokeWidth="7"/>
             <path d="M-20-30 30-10V23L-20 3Z" fill="#324553" stroke="#809aa5" strokeWidth="3"/>
-            <path d="M-13-20 22-6M-13-11 10-2" stroke="#b0d3d6" strokeWidth="3"/>
+            <path className="fh-fallback-screen" d="M-13-20 22-6M-13-11 10-2" stroke="#b0d3d6" strokeWidth="3"/>
             <ellipse cx="32" cy="90" rx="22" ry="9" fill="#77818d"/>
             <path d="M32 65V88" stroke="#47515b" strokeWidth="5"/>
             <rect x="13" y="30" width="38" height="40" rx="10" fill={['#779ab5','#9d8cbd','#85a58a'][i%3]}/>
-            <circle cx="32" cy="20" r="16" fill="#c8a78c"/>
-            <path d="M16 18Q10-5 33 1Q54 0 48 22L40 12Z" fill="#393438"/>
+            <g className="fh-fallback-head">
+              <circle cx="32" cy="20" r="16" fill="#c8a78c"/>
+              <path d="M16 18Q10-5 33 1Q54 0 48 22L40 12Z" fill="#393438"/>
+            </g>
+            <path className="fh-fallback-arm" d="M20 42 4 31 -8 26" fill="none" stroke="#c8a78c" strokeWidth="8" strokeLinecap="round"/>
             <rect x="-45" y="-65" width="145" height="22" rx="11" fill="#293544"/>
             <text x="27" y="-50" fill="white" textAnchor="middle" fontSize="10" fontFamily="sans-serif">{agent.name}</text>
           </g>
