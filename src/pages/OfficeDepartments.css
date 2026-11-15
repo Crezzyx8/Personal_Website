@@ -1,0 +1,52 @@
+.od-panel {
+  color: var(--od-fg, #e9effa);
+  background: var(--od-bg, #151d2c);
+  border: 1px solid #344258;
+  border-radius: 16px;
+  padding: clamp(16px, 3vw, 28px);
+  margin-bottom: 20px;
+}
+.od-panel h2 { margin: 20px 0 4px; font-size: 1.4rem; }
+.od-panel h3 { margin: 0; font-size: 1.1rem; }
+.od-panel p { margin: 8px 0; color: var(--od-muted, #bdc9dc); overflow-wrap: anywhere; }
+.od-nav { display: flex; flex-wrap: wrap; gap: 8px; }
+.od-panel form { display: grid; gap: 12px; margin-top: 18px; max-width: 560px; }
+.od-panel label { display: grid; gap: 6px; }
+.od-panel .od-rights { display: flex; align-items: center; }
+.od-panel input:not([type=checkbox]), .od-panel select, .od-panel textarea {
+  width: 100%;
+  border: 1px solid #53627b;
+  border-radius: 8px;
+  background: var(--od-bg, #151d2c);
+  color: inherit;
+  padding: 10px;
+}
+.od-panel button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  border-radius: 8px;
+  border: 1px solid #53627b;
+  padding: 9px 12px;
+  color: inherit;
+  cursor: pointer;
+}
+.od-panel button[aria-pressed=true], .od-panel form button {
+  background: #2258a8;
+  color: white;
+}
+.od-panel button:disabled { opacity: .55; cursor: default; }
+.od-panel a { color: #8ec5ff; margin-right: 14px; }
+.od-panel [role=alert] { color: #ffb0a7; }
+.od-jobs { list-style: none; padding: 0; max-height: 280px; overflow: auto; }
+.od-jobs li { border-top: 1px solid #344258; padding: 10px 0; overflow-wrap: anywhere; }
+.od-results { margin-top: 20px; }
+.od-table { overflow-x: auto; }
+.od-table table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.od-table th, .od-table td { padding: 8px; border-bottom: 1px solid #344258; text-align: left; }
+
+.od-drafts details { margin-top: 10px; border: 1px solid #344258; border-radius: 10px; padding: 12px; }
+.od-drafts summary { cursor: pointer; font-weight: 600; }
+.od-drafts pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; margin-top: 10px; }

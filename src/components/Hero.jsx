@@ -2,141 +2,102 @@ import { useEffect, useState } from "react"
 import { ChevronDown } from "lucide-react"
 import profile from "../assets/profile.jpeg"
 
-const greetings = [
-  "Hi",
-  "Halo",
-  "Hello",
-  "你好",
-  "안녕하세요",
-  "こんにちは",
-]
-
 const roles = [
-  "Full-Stack Developer (React, Node.js, Vue.js, PHP, Cypress)",
-  "Backend Developer specializing in Laravel & Node.js",
-  "Data Analyst specializing in SQL, Power BI & Python",
-  "Applied AI & Machine Learning Practitioner",
-  "Database Engineer (MySQL & SQL Server)",
+  "Full-Stack Developer",
+  "Backend Developer",
+  "Data Analyst",
+  "Applied AI & ML Practitioner",
+  "Database Engineer",
 ]
 
-const Hero = () => {
-  const [greetText, setGreetText] = useState("")
-  const [greetIndex, setGreetIndex] = useState(0)
-  const [greetSub, setGreetSub] = useState(0)
-  const [greetDeleting, setGreetDeleting] = useState(false)
-
-  const [roleText, setRoleText] = useState("")
-  const [roleIndex, setRoleIndex] = useState(0)
-  const [roleSub, setRoleSub] = useState(0)
-  const [roleDeleting, setRoleDeleting] = useState(false)
+function useTypewriter() {
+  const [text, setText] = useState(roles[0])
 
   useEffect(() => {
-    let timeout
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)")
+    let timer
+    let index = 0
+    let length = roles[0].length
+    let deleting = true
 
-    if (greetSub === greetings[greetIndex].length && !greetDeleting) {
-      timeout = setTimeout(() => setGreetDeleting(true), 1500)
-    } else if (greetSub === 0 && greetDeleting) {
-      setGreetDeleting(false)
-      setGreetIndex((prev) => (prev + 1) % greetings.length)
-    } else {
-      timeout = setTimeout(() => {
-        setGreetSub((prev) => prev + (greetDeleting ? -1 : 1))
-      }, greetDeleting ? 40 : 80)
+    function tick() {
+      const phrase = roles[index]
+      length += deleting ? -1 : 1
+      setText(phrase.slice(0, length))
+
+      if (deleting && length === 0) {
+        index = (index + 1) % roles.length
+        deleting = false
+        timer = setTimeout(tick, 280)
+      } else if (!deleting && length === phrase.length) {
+        deleting = true
+        timer = setTimeout(tick, 2100)
+      } else {
+        timer = setTimeout(tick, deleting ? 32 : 62)
+      }
     }
 
-    setGreetText(greetings[greetIndex].substring(0, greetSub))
-
-    return () => clearTimeout(timeout)
-  }, [greetSub, greetIndex, greetDeleting])
-
-  useEffect(() => {
-    let timeout
-
-    if (roleSub === roles[roleIndex].length && !roleDeleting) {
-      timeout = setTimeout(() => setRoleDeleting(true), 1200)
-    } else if (roleSub === 0 && roleDeleting) {
-      setRoleDeleting(false)
-      setRoleIndex((prev) => (prev + 1) % roles.length)
-    } else {
-      timeout = setTimeout(() => {
-        setRoleSub((prev) => prev + (roleDeleting ? -1 : 1))
-      }, roleDeleting ? 30 : 60)
+    function syncMotion() {
+      clearTimeout(timer)
+      index = 0
+      length = roles[0].length
+      deleting = true
+      setText(roles[0])
+      if (!motion.matches) timer = setTimeout(tick, 2200)
     }
 
-    setRoleText(roles[roleIndex].substring(0, roleSub))
+    syncMotion()
+    motion.addEventListener("change", syncMotion)
+    return () => {
+      clearTimeout(timer)
+      motion.removeEventListener("change", syncMotion)
+    }
+  }, [])
 
-    return () => clearTimeout(timeout)
-  }, [roleSub, roleIndex, roleDeleting])
+  return text
+}
+
+export default function Hero() {
+  const role = useTypewriter()
 
   return (
-    <section className="min-h-screen flex flex-col justify-center items-center px-6 md:px-10 text-center relative pt-28 md:pt-32">
+    <section className="flex min-h-screen flex-col items-center justify-center px-4 pb-12 pt-28 text-center sm:px-6 lg:px-16">
+      <div className="portfolio-glass w-full max-w-[84rem] rounded-[2rem] px-5 py-10 sm:px-12 lg:px-20 lg:py-14">
+        <img
+          src={profile}
+          alt="Filbert Huang"
+          className="mx-auto mb-8 h-24 w-24 rounded-full border-4 border-white/15 object-cover md:h-32 md:w-32"
+        />
 
-      <div className="max-w-5xl">
-
-        {/* PROFILE */}
-        <div className="mb-8 flex justify-center">
-          <img
-            src={profile}
-            alt="profile"
-            className="w-24 h-24 md:w-36 md:h-36 rounded-full object-cover border-4 border-neutral-800 shadow-lg"
-          />
-        </div>
-
-        {/* 🔥 GREETING + NAME */}
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight">
-          <span className="text-blue-500">
-            {greetText}
-            <span className="animate-pulse">|</span>
-          </span>{" "}
-          I'm{" "}
-          <span className="relative inline-block">
-            <span className="relative z-10 text-white">
-              Filbert
-            </span>
-            <span className="absolute inset-0 bg-blue-600/20 blur-2xl"></span>
-          </span>
+        <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-7xl">
+          <span className="text-neutral-300">Hello,</span> I&apos;m Filbert
         </h1>
 
-        {/* 🔥 ROLE (tetap ada) */}
-        <h2 className="mt-6 text-xl sm:text-2xl md:text-3xl font-semibold text-blue-500 min-h-[40px]">
-          {roleText}
-          <span className="animate-pulse">|</span>
-        </h2>
+        <p className="portfolio-role mt-5 text-lg font-medium text-neutral-300 sm:text-2xl md:text-3xl">
+          <span className="sr-only">{roles[0]}</span>
+          <span aria-hidden="true">{role}<span className="portfolio-caret" /></span>
+        </p>
 
-        {/* DESCRIPTION */}
-        <p className="mt-8 text-neutral-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-neutral-300 md:text-lg">
           Computer Science student specializing in Database Technology with
           hands-on experience in React.js, PHP, Node.js, Laravel and MySQL.
           Passionate about building scalable and efficient web applications,
           and experienced in data analysis and visualization using Python and SQL.
         </p>
 
-        {/* BUTTONS */}
-        <div className="mt-12 flex justify-center gap-6 flex-wrap">
-          <a
-            href="#projects"
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 transition rounded-xl shadow-lg shadow-blue-600/20 hover:scale-105"
-          >
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <a href="#projects" className="rounded-xl bg-white px-7 py-3 font-semibold text-neutral-950 transition hover:bg-neutral-200">
             View Projects
           </a>
-
-          <a
-            href="#contact"
-            className="px-8 py-3 border border-neutral-700 hover:border-blue-500 hover:text-white transition rounded-xl hover:scale-105"
-          >
+          <a href="#contact" className="rounded-xl border border-white/25 bg-white/5 px-7 py-3 transition hover:bg-white/15">
             Contact Me
           </a>
         </div>
-
       </div>
 
-      {/* SCROLL */}
-      <div className="absolute bottom-10 animate-bounce text-neutral-500">
-        <ChevronDown size={28} />
-      </div>
-
+      <a href="#about" aria-label="Go to About" className="mt-5 rounded-full p-2 text-neutral-400 transition hover:text-white">
+        <ChevronDown size={28} aria-hidden="true" />
+      </a>
     </section>
   )
 }
-
-export default Hero

@@ -1,43 +1,44 @@
-import Navbar from "../components/Navbar";
-import Hero from "../components/Hero";
-import About from "../components/About";
-import Experience from "../components/Experience";
-import Projects from "../components/Projects";
-import Certificates from "../components/Certificates";
-import Contact from "../components/Contact";
-import { useEffect } from "react";
+import { useEffect } from "react"
+import Navbar from "../components/Navbar"
+import Hero from "../components/Hero"
+import About from "../components/About"
+import Experience from "../components/Experience"
+import Projects from "../components/Projects"
+import Certificates from "../components/Certificates"
+import Contact from "../components/Contact"
+import "./HomePage.css"
 
-function HomePage() {
+export default function HomePage() {
   useEffect(() => {
-    const reveals = document.querySelectorAll(".reveal");
-
+    const reveals = document.querySelectorAll(".portfolio-home .reveal")
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("active");
+            entry.target.classList.add("active")
           }
-        });
+        })
       },
       { threshold: 0.2 }
-    );
+    )
 
-    reveals.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, []);
+    reveals.forEach((element) => observer.observe(element))
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-black to-neutral-900 text-white">
+    <div className="portfolio-home min-h-screen text-white">
+      <div className="portfolio-backdrop" aria-hidden="true" />
       <Navbar />
-      <Hero />
-      <About />
-      <Experience />
-      <Projects />
-      <Certificates />
-      <Contact />
-    </div>
-  );
-}
 
-export default HomePage;
+      <main className="portfolio-content">
+        <Hero />
+        <About />
+        <Experience />
+        <Projects />
+        <Certificates />
+        <Contact />
+      </main>
+    </div>
+  )
+}

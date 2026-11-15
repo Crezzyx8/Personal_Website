@@ -1,0 +1,77 @@
+.portfolio-home {
+  isolation: isolate;
+  background: #0a0a0a;
+}
+
+.portfolio-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 12% 15%, #363636 0%, transparent 48%),
+    radial-gradient(ellipse at 85% 65%, #282828 0%, transparent 50%),
+    linear-gradient(155deg, #151515, #080808 65%);
+}
+
+.portfolio-backdrop::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background-image:
+    linear-gradient(#ffffff0d 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff0d 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(#000, transparent 84%);
+}
+
+.portfolio-home .portfolio-nav {
+  background: #111111b8;
+  border-color: #ffffff22;
+  backdrop-filter: blur(16px);
+}
+
+.portfolio-glass {
+  border: 1px solid #ffffff2e;
+  background: linear-gradient(145deg, #343434, #141414);
+  box-shadow: 0 24px 70px #0007, inset 0 1px #ffffff17;
+}
+
+@supports (backdrop-filter: blur(10px)) {
+  .portfolio-glass {
+    background: linear-gradient(145deg, #ffffff14, #1111117a);
+    backdrop-filter: blur(12px);
+  }
+}
+
+.portfolio-content section[id] {
+  scroll-margin-top: 5rem;
+}
+
+.portfolio-role {
+  min-height: 2.8em;
+}
+
+@media (min-width: 640px) {
+  .portfolio-role {
+    min-height: 1.5em;
+  }
+}
+
+.portfolio-caret {
+  display: inline-block;
+  width: 2px;
+  height: .9em;
+  margin-inline-start: .24em;
+  vertical-align: -.08em;
+  background: currentColor;
+  animation: portfolio-caret-blink 1s step-end infinite;
+}
+
+@keyframes portfolio-caret-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-caret { display: none; }
+}
