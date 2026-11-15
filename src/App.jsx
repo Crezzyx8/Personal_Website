@@ -3,7 +3,7 @@ import HomePage from "./pages/HomePage"
 import GamesPage from "./pages/GamesPage"
 import AiOffice from "./pages/AiOffice"
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
@@ -14,5 +14,3 @@ function App() {
     </BrowserRouter>
   )
 }
-
-export default App

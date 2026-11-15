@@ -177,10 +177,11 @@ function TradingDepartment() {
   </>
 }
 
-export default function OfficeDepartments() {
-  const [department, setDepartment] = useState('clipping')
+export default function OfficeDepartments({ activeDepartment, hideNavigation = false }) {
+  const [localDepartment, setDepartment] = useState('clipping')
+  const department = activeDepartment || localDepartment
   return <section className="od-panel" aria-label="Departemen AI Office">
-    <div className="od-nav" role="group" aria-label="Pilih departemen">
+    <div hidden={hideNavigation} className="od-nav" role="group" aria-label="Pilih departemen">
       <button type="button" aria-pressed={department === 'clipping'} onClick={() => setDepartment('clipping')}>
         <Clapperboard size={18} /> Content Studio
       </button>

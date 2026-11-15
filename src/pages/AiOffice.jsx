@@ -1,659 +1,129 @@
-import { useState } from "react"
-import OfficeScene from "./OfficeScene"
-import NewTaskForm from "./NewTaskForm"
-import "./AiOffice.css"
-import OfficeDepartments from "./OfficeDepartments"
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ArrowLeft, ArrowUpRight, Clapperboard, TrendingUp, Package, LayoutDashboard, Activity, Pause, Play, RotateCcw, Camera, ChevronRight, Users } from 'lucide-react'
+import OfficeDepartments from './OfficeDepartments'
+import './AiOffice.css'
 
-const STORAGE_KEY = "filbert-office-tasks-v1"
-
+const OfficeScene = lazy(() => import('./OfficeScene'))
+const divisions = [
+  { id: 'clipping', name: 'Content Studio', icon: Clapperboard, text: 'Dari video panjang ke konten pendek.', color: '#8bb9d2' },
+  { id: 'trading', name: 'Trading Research', icon: TrendingUp, text: 'Riset aset dan skenario perdagangan.', color: '#b4a2dd' },
+  { id: 'products', name: 'Digital Products', icon: Package, text: 'Ubah ide menjadi draft produk digital.', color: '#a2c4a8' },
+]
 const agents = [
-  {
-    name: "Producer",
-    task: "Mengatur brief dan antrean",
-    color: "#f59e0b",
-  },
-  {
-    name: "Clip Strategist",
-    task: "Memilih momen menarik",
-    color: "#3b82f6",
-  },
-  {
-    name: "Video Editor",
-    task: "Editing dan subtitle",
-    color: "#10b981",
-  },
-  {
-    name: "Content Reviewer",
-    task: "Memeriksa konteks dan teks",
-    color: "#8b5cf6",
-  },
-  {
-    name: "Technical Reviewer",
-    task: "Memeriksa video dan audio",
-    color: "#ec4899",
-  },
-  {
-    name: "Publisher",
-    task: "Upload YouTube dan TikTok",
-    color: "#14b8a6",
-  },
+  { name: 'Producer', division: 'clipping', role: 'Mengatur brief, pemilihan klip, dan alur produksi.' },
+  { name: 'Editor & QA', division: 'clipping', role: 'Editing, subtitle, review hasil, dan publikasi sesuai konfigurasi worker.' },
+  { name: 'Market Analyst', division: 'trading', role: 'Membaca data pasar dan struktur harga aset.' },
+  { name: 'Risk Researcher', division: 'trading', role: 'Menyusun skenario entry, TP, dan SL untuk ditinjau.' },
+  { name: 'Product Strategist', division: 'products', role: 'Menyusun ide, target pembeli, dan struktur produk.' },
+  { name: 'Product Writer', division: 'products', role: 'Membuat draft konten dan materi produk digital.' },
 ]
-
-const productionSteps = [
-  "Terima video",
-  "Pilih momen",
-  "Edit dan subtitle",
-  "Review konten",
-  "Review teknis",
-  "Publish",
-]
-
-const primaryButtonStyle = {
-  padding: "9px 14px",
-  border: 0,
-  borderRadius: 8,
-  background: "#3b82f6",
-  color: "white",
-  fontSize: 12,
-  fontWeight: 600,
-  cursor: "pointer",
-}
-
-function getInitials(name) {
-  return name
-    .split(" ")
-    .map((word) => word[0])
-    .join("")
-}
-
-function loadTasks() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    const parsed = stored ? JSON.parse(stored) : []
-
-    if (!Array.isArray(parsed)) {
-      return []
-    }
-
-    return parsed.filter(
-      (task) =>
-        task &&
-        typeof task.id === "string" &&
-        typeof task.title === "string" &&
-        typeof task.createdAt === "string" &&
-        task.file &&
-        typeof task.file.name === "string"
-    )
-  } catch {
-    return []
-  }
-}
-
-function formatDate(value) {
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) {
-    return "Waktu tidak tersedia"
-  }
-
-  return date.toLocaleString("id-ID", {
-    timeZone: "Asia/Jakarta",
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
-}
-
-function ProductionFlow() {
-  return (
-    <div className="office-flow">
-      <h3>Alur produksi</h3>
-
-      <ol>
-        {productionSteps.map((step, index) => (
-          <li key={step}>
-            <span className="office-step-number">
-              {index + 1}
-            </span>
-            <span>{step}</span>
-          </li>
-        ))}
-      </ol>
-    </div>
-  )
-}
-
-function AgentDetails({ agent }) {
-  return (
-    <div className="office-agent-detail" aria-live="polite">
-      <span
-        className="office-detail-avatar"
-        style={{ backgroundColor: agent.color }}
-        aria-hidden="true"
-      >
-        {getInitials(agent.name)}
-      </span>
-
-      <h3>{agent.name}</h3>
-      <p>{agent.task}</p>
-
-      <div className="office-detail-section">
-        <strong>Status koneksi</strong>
-        <span>Belum terhubung ke worker</span>
-      </div>
-
-      <div className="office-detail-section">
-        <strong>Pekerjaan aktif</strong>
-        <span>Belum ada pekerjaan berjalan</span>
-      </div>
-
-      <div className="office-review-note">
-        <strong>Animasi visual</strong>
-        <p>
-          Gerakan karakter belum mencerminkan proses AI nyata.
-        </p>
-      </div>
-    </div>
-  )
-}
-
-function TaskDetails({ task }) {
-  const fileSize = (
-    Number(task.file.size || 0) /
-    1024 /
-    1024
-  ).toFixed(1)
-
-  return (
-    <div className="office-agent-detail" aria-live="polite">
-      <h3 style={{ overflowWrap: "anywhere" }}>
-        {task.title}
-      </h3>
-
-      <p style={{ whiteSpace: "pre-wrap" }}>
-        {task.brief || "Tidak ada brief tambahan."}
-      </p>
-
-      <div className="office-detail-section">
-        <strong>Video sumber</strong>
-        <span style={{ overflowWrap: "anywhere" }}>
-          {task.file.name}
-        </span>
-      </div>
-
-      <div className="office-detail-section">
-        <strong>Ukuran file</strong>
-        <span>{fileSize} MB</span>
-      </div>
-
-      <div className="office-detail-section">
-        <strong>Target hasil</strong>
-        <span>
-          {task.clipCount} klip · {task.duration} detik per klip
-        </span>
-      </div>
-
-      <div className="office-detail-section">
-        <strong>Dibuat</strong>
-        <span>{formatDate(task.createdAt)} WIB</span>
-      </div>
-
-      <div className="office-review-note">
-        <strong>Menunggu worker</strong>
-        <p>
-          Brief tersimpan di browser. File video belum diupload,
-          diproses, atau dipublikasikan.
-        </p>
-      </div>
-    </div>
-  )
-}
-
-function TaskQueue({ tasks, onSelectTask, onNewTask }) {
-  let queueContent
-
-  if (tasks.length === 0) {
-    queueContent = (
-      <div className="office-queue-empty">
-        <span aria-hidden="true">▤</span>
-        <p>Belum ada brief produksi.</p>
-
-        <button
-          type="button"
-          onClick={onNewTask}
-          style={{
-            ...primaryButtonStyle,
-            marginTop: 14,
-          }}
-        >
-          Buat task pertama
-        </button>
-      </div>
-    )
-  } else {
-    queueContent = (
-      <div
-        style={{
-          display: "grid",
-          gap: 10,
-          margin: "18px 0",
-          maxHeight: 360,
-          overflowY: "auto",
-        }}
-      >
-        {tasks.map((task) => (
-          <button
-            key={task.id}
-            type="button"
-            onClick={() => onSelectTask(task)}
-            style={{
-              width: "100%",
-              padding: 12,
-              border: "1px solid #e0e7ef",
-              borderRadius: 9,
-              background: "#f8faff",
-              color: "#243247",
-              textAlign: "left",
-              cursor: "pointer",
-            }}
-          >
-            <strong
-              style={{
-                display: "block",
-                fontSize: 11,
-                overflowWrap: "anywhere",
-              }}
-            >
-              {task.title}
-            </strong>
-
-            <span
-              style={{
-                display: "block",
-                marginTop: 5,
-                color: "#8290a3",
-                fontSize: 10,
-              }}
-            >
-              {task.clipCount} klip · {task.duration} detik
-            </span>
-
-            <span
-              style={{
-                display: "block",
-                marginTop: 7,
-                color: "#a57a2e",
-                fontSize: 9,
-              }}
-            >
-              Menunggu worker
-            </span>
-          </button>
-        ))}
-      </div>
-    )
-  }
-
-  return (
-    <>
-      {queueContent}
-      <ProductionFlow />
-    </>
-  )
-}
-
-function ActivityPanel({ tasks }) {
-  let activityContent
-
-  if (tasks.length === 0) {
-    activityContent = (
-      <div className="office-empty-state">
-        <span className="office-empty-icon" aria-hidden="true">
-          ◷
-        </span>
-
-        <h3>Belum ada aktivitas</h3>
-        <p>Buat brief pertama melalui tombol Task Baru.</p>
-      </div>
-    )
-  } else {
-    activityContent = (
-      <div style={{ marginTop: 18 }}>
-        {tasks.slice(0, 8).map((task) => (
-          <div
-            key={task.id}
-            style={{
-              padding: "12px 0",
-              borderBottom: "1px solid #edf0f5",
-            }}
-          >
-            <strong
-              style={{
-                display: "block",
-                fontSize: 11,
-                fontWeight: 600,
-                overflowWrap: "anywhere",
-              }}
-            >
-              Brief dibuat: {task.title}
-            </strong>
-
-            <p
-              style={{
-                margin: "5px 0",
-                color: "#8290a3",
-                fontSize: 10,
-              }}
-            >
-              {formatDate(task.createdAt)} WIB
-            </p>
-
-            <span
-              style={{
-                color: "#a57a2e",
-                fontSize: 10,
-              }}
-            >
-              Menunggu worker
-            </span>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  return (
-    <aside className="office-panel">
-      <div className="office-panel-heading">
-        <h2>Aktivitas langsung</h2>
-        <span className="office-counter">{tasks.length}</span>
-      </div>
-
-      {activityContent}
-
-      <div className="office-panel-note">
-        <span className="office-status-dot" />
-        Aktivitas ini mencatat brief, bukan eksekusi AI
-      </div>
-    </aside>
-  )
-}
+const timeFormat = new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit' })
 
 export default function AiOffice() {
-  const [selectedAgent, setSelectedAgent] = useState(null)
-  const [showTaskForm, setShowTaskForm] = useState(false)
-  const [tasks, setTasks] = useState(loadTasks)
-  const [selectedTaskId, setSelectedTaskId] = useState(null)
-  const [storageError, setStorageError] = useState("")
+  const [page, setPage] = useState('overview')
+  const [selected, setSelected] = useState(null)
+  const [paused, setPaused] = useState(false)
+  const [cameraView, setCameraView] = useState('isometric')
+  const [resetKey, setResetKey] = useState(0)
+  const [now, setNow] = useState(() => new Date())
+  const [connection, setConnection] = useState('checking')
+  const [jobs, setJobs] = useState([])
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 30000)
+    return () => clearInterval(interval)
+  }, [])
+  useEffect(() => {
+    const controller = new AbortController()
+    let timer
+    async function poll() {
+      try {
+        const response = await fetch('/office-api/production/jobs', { signal: controller.signal })
+        if (!response.ok) throw new Error('offline')
+        const data = await response.json()
+        if (!Array.isArray(data.jobs)) throw new Error('invalid')
+        if (!controller.signal.aborted) { setJobs(data.jobs); setConnection('online') }
+      } catch {
+        if (!controller.signal.aborted) setConnection('offline')
+      } finally {
+        if (!controller.signal.aborted) timer = setTimeout(poll, 10000)
+      }
+    }
+    poll()
+    return () => { controller.abort(); clearTimeout(timer) }
+  }, [])
+  const current = divisions.find(item => item.id === page)
+  const title = current?.name || 'Filbert AI Office'
+  let statusText = 'Mengecek worker'
+  if (connection === 'online') statusText = 'Worker terhubung'
+  if (connection === 'offline') statusText = 'Worker belum terhubung'
+  let jobCount = '—'
+  if (connection === 'online') jobCount = jobs.filter(job => !['completed', 'failed', 'rendered'].includes(job.status)).length
 
-  const selectedTask = tasks.find(
-    (task) => task.id === selectedTaskId
-  )
+  function navigate(id) { setPage(id); setSelected(null) }
 
-  function handleCreateTask(task) {
-  const nextTasks = [
-    task,
-    ...tasks.filter((existing) => existing.id !== task.id),
-  ]
-
-  setTasks(nextTasks)
-  setSelectedTaskId(task.id)
-  setSelectedAgent(null)
-  setShowTaskForm(false)
-  setStorageError("")
-
-  try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(nextTasks)
-    )
-  } catch {
-    setStorageError(
-      "Video berhasil disimpan di worker, tetapi cache browser gagal disimpan. Jangan upload ulang."
-    )
-  }
-}
-
-  function openTaskForm() {
-    setStorageError("")
-    setShowTaskForm(true)
-  }
-
-  function closeTaskForm() {
-    setShowTaskForm(false)
-    setStorageError("")
-  }
-
-  function selectAgent(agent) {
-    setSelectedAgent(agent)
-    setSelectedTaskId(null)
-  }
-
-  function selectTask(task) {
-    setSelectedTaskId(task.id)
-    setSelectedAgent(null)
-  }
-
-  function clearSelection() {
-    setSelectedAgent(null)
-    setSelectedTaskId(null)
-  }
-
-  let panelTitle = "Antrean pekerjaan"
-
-  let panelContent = (
-    <TaskQueue
-      tasks={tasks}
-      onSelectTask={selectTask}
-      onNewTask={openTaskForm}
-    />
-  )
-
-  if (selectedAgent) {
-    panelTitle = "Detail agent"
-    panelContent = <AgentDetails agent={selectedAgent} />
-  } else if (selectedTask) {
-    panelTitle = "Detail pekerjaan"
-    panelContent = <TaskDetails task={selectedTask} />
-  }
-
-  let panelAction = (
-    <span className="office-counter">{tasks.length}</span>
-  )
-
-  if (selectedAgent || selectedTask) {
-    panelAction = (
-      <button
-        type="button"
-        className="office-detail-close"
-        onClick={clearSelection}
-      >
-        Kembali
-      </button>
-    )
-  }
-
-  return (
-    <main className="office-page">
-      <header className="office-header">
-        <div className="office-brand">
-          <div
-            className="office-brand-icon"
-            aria-hidden="true"
-          >
-            FH
-          </div>
-
-          <div>
-            <h1>Kantor Virtual Filbert</h1>
-            <p>Tim produksi konten YouTube dan TikTok</p>
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: 10,
-          }}
-        >
-          <span className="office-badge">
-            <span className="office-status-dot" />
-            Worker belum terhubung
-          </span>
-
-          <button
-            type="button"
-            onClick={openTaskForm}
-            style={primaryButtonStyle}
-          >
-            + Task Baru
-          </button>
-        </div>
-      </header>
-
-      <OfficeDepartments />
-
-      {storageError && (
-        <p
-          role="alert"
-          style={{
-            padding: 14,
-            border: "1px solid #fecdca",
-            borderRadius: 8,
-            background: "#fef3f2",
-            color: "#b42318",
-            fontSize: 12,
-          }}
-        >
-          {storageError}
-        </p>
-      )}
-
-      <div className="office-layout">
-        <ActivityPanel tasks={tasks} />
-
-        <section
-          className="office-room"
-          aria-labelledby="studio-title"
-        >
-          <div className="office-room-heading">
-            <div>
-              <h2 id="studio-title">Content Studio</h2>
-              <p>Ruang kerja tim produksi</p>
+  return <div className="fh-office">
+    <aside className="fh-sidebar">
+      <Link to="/" className="fh-brand"><span className="fh-monogram">F.</span><span>Filbert Office<small>PERSONAL AI WORKSPACE</small></span></Link>
+      <nav aria-label="Navigasi AI Office">
+        <button className={page === 'overview' ? 'active' : ''} aria-current={page === 'overview' ? 'page' : undefined} onClick={() => navigate('overview')}><LayoutDashboard size={18} /> Dashboard</button>
+        <p className="fh-nav-label">DEPARTMENTS</p>
+        {divisions.map(({ id, name, icon: Icon, color }) => <button key={id} className={page === id ? 'active' : ''} aria-current={page === id ? 'page' : undefined} onClick={() => navigate(id)}><Icon size={18} style={{ color }} />{name}<ChevronRight size={14} /></button>)}
+      </nav>
+      <Link className="fh-back" to="/"><ArrowLeft size={16} /> Website personal <ArrowUpRight size={14} /></Link>
+      <div className="fh-owner"><span>FH</span><div>Filbert Huang<small>Workspace owner</small></div></div>
+    </aside>
+    <main className="fh-main">
+      <header className="fh-header"><div className="fh-breadcrumb">Workspace <ChevronRight size={13} /><strong>{title}</strong></div><div className="fh-header-end"><span className={'fh-status ' + connection}><i />{statusText}</span><time>{timeFormat.format(now)} WIB</time></div></header>
+      {page === 'overview' ? <>
+        <section id="office-floor" className="fh-stage" aria-label="Kantor virtual">
+          <div className="fh-stage-heading">
+            <div className="fh-stage-title">
+              <span>VIRTUAL HEADQUARTERS</span>
+              <h1>{title}</h1>
+              <small>{divisions.length} divisi · {agents.length} peran</small>
             </div>
-
-            <span className="office-room-badge">
-              6 peran agent
-            </span>
+            <span className="fh-orbit-hint">Drag untuk putar · Scroll untuk zoom</span>
           </div>
-
-          <OfficeScene />
-
-          <div className="office-room-footer">
-            <span className="office-room-footer-label">
-              WORKFLOW
-            </span>
-
-            <p>
-              Producer → Strategist → Editor → Review konten →
-              Review teknis → Publisher
-            </p>
+          <Suspense fallback={<div className="fh-scene-loading">Menyiapkan kantor 3D…</div>}>
+            <OfficeScene agents={agents} onSelect={setSelected} paused={paused} cameraView={cameraView} resetKey={resetKey} />
+          </Suspense>
+          {selected && (
+            <section className="fh-agent-detail" aria-label="Detail agent" aria-live="polite">
+              <div>
+                <p className="fh-eyebrow">{divisions.find(division => division.id === selected.division).name}</p>
+                <h2>{selected.name}</h2>
+                <p>{selected.role}</p>
+              </div>
+              <button onClick={() => navigate(selected.division)}>Buka divisi <ArrowUpRight size={15} /></button>
+              <button onClick={() => setSelected(null)}>Tutup</button>
+            </section>
+          )}
+          <div className="fh-stage-caption">
+            <div className="fh-scene-controls" role="group" aria-label="Kontrol kantor 3D">
+              <button onClick={() => setCameraView('isometric')} aria-pressed={cameraView === 'isometric'}><Camera size={15} /> Isometrik</button>
+              <button onClick={() => setCameraView('front')} aria-pressed={cameraView === 'front'}>Depan</button>
+              <button onClick={() => setPaused(value => !value)} aria-pressed={paused}>{paused ? <Play size={15} /> : <Pause size={15} />}{paused ? 'Lanjut' : 'Jeda'}</button>
+              <button onClick={() => setResetKey(value => value + 1)}><RotateCcw size={15} /> Reset</button>
+            </div>
           </div>
         </section>
-
-        <aside
-          className="office-panel"
-          aria-label="Detail dan antrean pekerjaan"
-        >
-          <div className="office-panel-heading">
-            <h2>{panelTitle}</h2>
-            {panelAction}
+        <div className="fh-lower-grid"><section><div className="fh-section-heading"><h2>Your departments</h2><span>03 teams</span></div><div className="fh-division-grid">{divisions.map(({ id, name, icon: Icon, color, text }, index) => <button key={id} className="fh-division-card" onClick={() => navigate(id)}><div><span className="fh-icon" style={{ color }}><Icon size={21} /></span><span className="fh-card-number">0{index + 1}</span></div><h3>{name}</h3><p>{text}</p><footer>Buka workspace <ArrowUpRight size={16} /></footer></button>)}</div></section>
+          <section className="fh-activity"><div className="fh-section-heading"><h2><Activity size={16} /> Aktivitas produksi</h2><span>{jobCount} berjalan</span></div>{connection !== 'online' && <p>Hubungkan worker untuk melihat aktivitas produksi asli.</p>}{connection === 'online' && jobs.length === 0 && <p>Belum ada pekerjaan. Mulai dari Content Studio.</p>}{connection === 'online' && jobs.slice(0, 3).map(job => <div key={job.id} className="fh-job"><strong>{job.clip_title || job.url}</strong><p>{job.message || job.status}</p></div>)}</section></div>
+        <section className="fh-team"><div className="fh-section-heading"><h2><Users size={16} /> Meet your team</h2><span>Pilih peran untuk detail</span></div><div className="fh-agent-list">{agents.map(agent => <button key={agent.name} onClick={() => {
+          setSelected(agent)
+          document.getElementById('office-floor')?.scrollIntoView({ block: 'nearest' })
+        }}><span>{agent.name[0]}</span><div><strong>{agent.name}</strong><small>{divisions.find(d => d.id === agent.division).name}</small></div><ChevronRight size={14} /></button>)}</div></section>
+      </> : (
+        <section className="fh-department-workspace">
+          <div className="fh-page-heading">
+            <div><h1>{title}</h1><p>{current?.text}</p></div>
+            <button className="fh-home-link" onClick={() => navigate('overview')}><ArrowLeft size={15} /> Kembali ke kantor 3D</button>
           </div>
-
-          {panelContent}
-        </aside>
-      </div>
-
-      <section
-        className="office-agents"
-        aria-label="Pilih anggota tim"
-      >
-        {agents.map((agent) => {
-          const isSelected =
-            selectedAgent?.name === agent.name
-
-          let cardClassName = "office-agent-card"
-
-          if (isSelected) {
-            cardClassName += " is-selected"
-          }
-
-          return (
-            <button
-              type="button"
-              key={agent.name}
-              className={cardClassName}
-              style={{ "--agent-color": agent.color }}
-              onClick={() => selectAgent(agent)}
-              aria-pressed={isSelected}
-              aria-label={`Lihat detail ${agent.name}`}
-            >
-              <span className="office-agent-title">
-                <span
-                  className="office-agent-avatar"
-                  aria-hidden="true"
-                >
-                  {getInitials(agent.name)}
-                </span>
-
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 650,
-                  }}
-                >
-                  {agent.name}
-                </span>
-              </span>
-
-              <span
-                style={{
-                  display: "block",
-                  minHeight: 32,
-                  margin: "10px 0",
-                  color: "#8290a3",
-                  fontSize: 10,
-                  lineHeight: 1.7,
-                }}
-              >
-                {agent.task}
-              </span>
-
-              <span className="office-agent-status">
-                <span />
-                Belum terhubung
-              </span>
-            </button>
-          )
-        })}
-      </section>
-
-      <footer className="office-page-footer">
-        <span>Filbert AI Office</span>
-        <span>
-          Brief tersimpan di browser ini · Video belum diupload
-        </span>
-      </footer>
-
-      {showTaskForm && (
-        <NewTaskForm
-          onClose={closeTaskForm}
-          onCreate={handleCreateTask}
-        />
+          <OfficeDepartments activeDepartment={page} hideNavigation />
+        </section>
       )}
+      <footer className="fh-footer"><span>FILBERT OFFICE</span><span>Animasi 3D adalah visualisasi. Eksekusi mengikuti kemampuan worker yang terhubung.</span></footer>
     </main>
-  )
+  </div>
 }
